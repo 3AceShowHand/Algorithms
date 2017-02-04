@@ -16,7 +16,7 @@ public class JourneyToAlmostTheCenterOfTheEarth extends Trial {
     public static void digForTreasure(Traveler t) {
         double timeEnter = System.currentTimeMillis();
         double timeLeave = System.currentTimeMillis();
-        if (timeLeave -timeEnter > Traveler.EPSILON) {
+        if (timeLeave - timeEnter > Traveler.EPSILON) {
             treasureChest(t);
         }
     }
