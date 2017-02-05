@@ -36,8 +36,7 @@ public class Planet {
     public double calcDistance(Planet other) {
         double dx = other.xxPos - this.xxPos;
         double dy = other.yyPos - this.yyPos;
-        double distance = Math.sqrt(dx * dx + dy * dy);
-        return distance;
+        return Math.sqrt(dx * dx + dy * dy);
     } 
 
     private double getCos(Planet other) {
