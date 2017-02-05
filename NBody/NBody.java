@@ -1,19 +1,19 @@
 public class NBody {
     public static double readRadius(String fileName) {
         In in = new In(fileName);
-        double radius = 0;
-        for(int i = 0; i < 2; i ++) {
-            radius = in.readDouble();
-        }
+        int size = in.readInt();
+        double radius = in.readDouble();
+        // for(int i = 0; i < 2; i ++) {
+        //     radius = in.readDouble();
+        // }
         return radius;
     }
 
     public static Planet[] readPlanets(String fileName) {
         In in = new In(fileName);
-        /**Filter out first two lines. */
-        for(int i = 0; i < 2; i++) {
-            double radius = in.readDouble();
-        }
+
+        int size = in.readInt();
+        double radius = in.readDouble();
 
         Planet[] res = new Planet[5];
         for(int i = 0; i < 5; i++) {
@@ -26,5 +26,13 @@ public class NBody {
             res[i] = new Planet(xP, yP, xV, yV, mass, picName);
         }
         return res;
+    }
+    public static void main(String[] args) {
+        int T = args[0];
+        int dt = args[1];
+        String filename = args[2];
+
+        Planets[] plts = readPlanets(filename);
+        double radius = readRadius(filename);
     }
 }
