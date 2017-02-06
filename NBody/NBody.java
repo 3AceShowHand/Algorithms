@@ -38,7 +38,14 @@ public class NBody {
             StdDraw.show(10);
             time += dt;
         }
-        StdDraw.show();
+
+        StdOut.printf("%d\n", plts.length);
+        StdOut.printf("%.2e\n", radius);
+        for (int i = 0; i < plts.length; i++) {
+	        StdOut.printf("%11.4e %11.4e %11.4e %11.4e %11.4e %12s\n",
+   		    plts[i].xxPos, plts[i].yyPos, plts[i].xxVel, plts[i].yyVel, plts[i].mass, plts[i].imgFileName);	
+        }	
+        //StdDraw.show();
     }
 
     public static double readRadius(String fileName) {
