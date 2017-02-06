@@ -313,4 +313,10 @@ tramp
 # Project 3 things
 proj3/img
 proj3/target
+<<<<<<< HEAD
 >>>>>>> db5b5f86bb3e7d5d5857859317fe251c879eb43b
+=======
+
+# Project 1B things
+words
+>>>>>>> 65a97af9e8cd9e0fa83916f17a3513a110b0236e
