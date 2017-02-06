@@ -17,6 +17,8 @@ public class NBody {
             plts[i].imgFileName = "./images/".concat(plts[i].imgFileName);
             plts[i].draw();
         }
+        /** Add a loop background music */
+        StdAudio.loop("./audio/2001.mid");
         /** Add animation */
         double time = 0;
         while(time < T) {
