@@ -1,4 +1,26 @@
 public class NBody {
+
+    public static void main(String[] args) {
+        Double T = Double.parseDouble(args[0]);
+        Double dt = Double.parseDouble(args[1]);
+        String filename = args[2];
+
+        Planet[] plts = readPlanets(filename);
+        double radius = readRadius(filename);
+        String imageToDraw = "./images/starfield.jpg";
+
+        StdDraw.setScale(-radius, radius);
+        StdDraw.clear();
+        StdDraw.picture(0, 0, imageToDraw);
+        
+        for(int i = 0; i < plts.length; i++) {
+            plts[i].imgFileName = "./images/".concat(plts[i].imgFileName);
+            plts[i].draw();
+        }
+
+        StdDraw.show();
+    }
+
     public static double readRadius(String fileName) {
         In in = new In(fileName);
         int size = in.readInt();
@@ -27,12 +49,6 @@ public class NBody {
         }
         return res;
     }
-    public static void main(String[] args) {
-        int T = args[0];
-        int dt = args[1];
-        String filename = args[2];
 
-        Planets[] plts = readPlanets(filename);
-        double radius = readRadius(filename);
-    }
 }
+
