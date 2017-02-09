@@ -1,3 +1,5 @@
+import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
+
 import java.util.Formatter;
 
 /**
@@ -24,12 +26,25 @@ public class IntList {
         rest = rest0;
     }
 
+
     /**
      * A List with null rest, and first = 0.
      */
     public IntList() {
     /* NOTE: public IntList () { }  would also work. */
         this(0, null);
+    }
+
+    public IntList reverse() {
+        IntList res = IntList.list();
+        IntList ptr = this;
+        while (ptr != null) {
+            IntList next = ptr.rest;
+            ptr.rest = res;
+            res = ptr;
+            ptr = next;
+        }
+        return res;
     }
 
     /**
