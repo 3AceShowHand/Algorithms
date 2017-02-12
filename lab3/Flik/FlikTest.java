@@ -1,10 +1,12 @@
+/**
+ * Created by Christopher on 2017/2/11.
+ */
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Christopher on 2017/2/11.
- */
+
 public class FlikTest {
 
     @Test
