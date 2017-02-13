@@ -5,7 +5,7 @@ import java.util.Objects;
  */
 public class ArraryDeque<Item> implements Deque<Item> {
 
-    private Item items;
+    private Item[] items;
     private int size;
 
     public ArraryDeque() {
@@ -35,7 +35,9 @@ public class ArraryDeque<Item> implements Deque<Item> {
 
     @Override
     public void printDeque() {
-
+        for(int i = 0; i < size; i++) {
+            System.out.println(items[i] + " ");
+        }
     }
 
     @Override
@@ -50,6 +52,6 @@ public class ArraryDeque<Item> implements Deque<Item> {
 
     @Override
     public Item get(int index) {
-
+        return items[index];
     }
 }

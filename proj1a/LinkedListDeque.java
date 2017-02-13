@@ -4,8 +4,8 @@
 public class LinkedListDeque<Item> implements Deque<Item> {
 
     private class Node<Item> {
-        Item value;
-        Node next;
+        public Item value;
+        public Node next;
 
         public Node(Item item, Node n) {
             value = item;
@@ -13,8 +13,8 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         }
     }
 
-    Node sentinel;
-    int size;
+    private Node sentinel;
+    private int size;
 
     public LinkedListDeque() {
         sentinel = null;
@@ -43,7 +43,9 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
     @Override
     public void printDeque() {
-
+        for(Node ptr = sentinel.next; ptr != null; ptr = ptr.next) {
+            System.out.println(ptr.value + " ");
+        }
     }
 
     @Override
@@ -58,7 +60,11 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
     @Override
     public Item get(int index) {
-
+        Node ptr = sentinel.next;
+        while (index != 0) {
+            ptr = ptr.next;
+        }
+        return ptr.value;
     }
 
 }
