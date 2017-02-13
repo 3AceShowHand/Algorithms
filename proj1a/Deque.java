@@ -4,10 +4,10 @@
 public interface Deque<Item> {
 
     /** Adds an item to the front of the Deque.*/
-    void addFirst(Item);
+    void addFirst(Item item);
 
     /** Adds an item to the back of the Deque. */
-    void addLast(Item);
+    void addLast(Item item);
 
     /** Returns true if deque is empty, false otherwise. */
     boolean isEmpty();

@@ -13,6 +13,7 @@ public class ArraryDeque<Item> implements Deque<Item> {
         size = 0;
     }
 
+    @Override
     public int size() {
         return size;
     }
@@ -20,5 +21,35 @@ public class ArraryDeque<Item> implements Deque<Item> {
     @Override
     public boolean isEmpty() {
         return this.size == 0;
+    }
+
+    @Override
+    public void addFirst(Item item) {
+
+    }
+
+    @Override
+    public void addLast(Item item) {
+
+    }
+
+    @Override
+    public void printDeque() {
+
+    }
+
+    @Override
+    public Item removeFirst() {
+
+    }
+
+    @Override
+    public Item removeLast() {
+
+    }
+
+    @Override
+    public Item get(int index) {
+
     }
 }
