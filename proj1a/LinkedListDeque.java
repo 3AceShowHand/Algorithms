@@ -5,19 +5,29 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
     private class Node<Item> {
         public Item value;
+        public Node prev;
         public Node next;
 
-        public Node(Item item, Node n) {
+        public Node(Item item) {
             value = item;
-            next = n;
+        }
+
+        public Node() {
+            value = (Item) new Object();
+            prev = null;
+            next = null;
         }
     }
 
-    private Node sentinel;
+    private Node front;
+    private Node rear;
     private int size;
 
     public LinkedListDeque() {
-        sentinel = null;
+        front = new Node();
+        rear = new Node();
+        front.next = rear;
+        rear.prev = front;
         size = 0;
     }
 
@@ -33,38 +43,53 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
     @Override
     public void addFirst(Item item) {
-
+        Node n = new Node(item);
+        n.prev = front;
+        n.next = front.next;
+        n.next.prev = n;
+        front.next = n;
+        size += 1;
     }
 
     @Override
     public void addLast(Item item) {
-
+        Node n = new Node(item);
+        n.next = rear;
+        n.prev = rear.prev;
+        rear.prev.next = n;
+        rear.prev = n;
+        size += 1;
     }
 
     @Override
     public void printDeque() {
-        for(Node ptr = sentinel.next; ptr != null; ptr = ptr.next) {
+        for(Node ptr = front.next; ptr != rear; ptr = ptr.next) {
             System.out.println(ptr.value + " ");
         }
     }
 
     @Override
     public Item removeFirst() {
-
+        return null;
     }
 
     @Override
     public Item removeLast() {
-
+        return null;
     }
 
     @Override
     public Item get(int index) {
-        Node ptr = sentinel.next;
+        Node ptr = front.next;
         while (index != 0) {
             ptr = ptr.next;
+            index -= 1;
         }
-        return ptr.value;
+        return (Item)ptr.value;
+    }
+
+    public Item getRecursive(int index) {
+        return null;
     }
 
 }

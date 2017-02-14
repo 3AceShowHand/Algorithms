@@ -12,7 +12,7 @@ public class SLList {
         public IntNode(int i , IntNode n) {
             item = i;
             next = n;
-        }
+        }   
     }
 
     /**The first item (if it exists) is at sentinel.next */

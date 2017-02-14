@@ -42,12 +42,12 @@ public class ArraryDeque<Item> implements Deque<Item> {
 
     @Override
     public Item removeFirst() {
-
+        return null;
     }
 
     @Override
     public Item removeLast() {
-
+        return null;
     }
 
     @Override
