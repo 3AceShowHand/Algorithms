@@ -64,7 +64,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
     @Override
     public void printDeque() {
         for (Node ptr = front.next; ptr != rear; ptr = ptr.next) {
-            System.out.println(ptr.value + " ");
+            System.out.print(ptr.value + " ");
         }
     }
 
@@ -74,11 +74,12 @@ public class LinkedListDeque<Item> implements Deque<Item> {
             return null;
         }
         Node first = front.next;
+        Item res = (Item) first.value;
         front.next = first.next;
         first.next.prev = front;
-        first.prev = first.next = null;
+        first.value = first.prev = first.next = null;
         size--;
-        return (Item) first.value;
+        return res;
     }
 
     @Override
@@ -87,11 +88,12 @@ public class LinkedListDeque<Item> implements Deque<Item> {
             return null;
         }
         Node last = rear.prev;
+        Item res = (Item) last.value;
         rear.prev = last.prev;
         last.prev.next = rear;
-        last.prev = last.next = null;
+        last.value = last.prev = last.next = null;
         size--;
-        return (Item) last.value;
+        return res;
     }
 
     @Override
