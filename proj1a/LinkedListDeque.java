@@ -8,12 +8,12 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         public Node prev;
         public Node next;
 
-        public Node(Item item) {
+        Node(Item item) {
             value = item;
         }
 
-        public Node() {
-            value = (Item) new Object();
+        Node() {
+            value = null;
             prev = null;
             next = null;
         }
@@ -63,14 +63,14 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
     @Override
     public void printDeque() {
-        for(Node ptr = front.next; ptr != rear; ptr = ptr.next) {
+        for (Node ptr = front.next; ptr != rear; ptr = ptr.next) {
             System.out.println(ptr.value + " ");
         }
     }
 
     @Override
     public Item removeFirst() {
-        if(isEmpty()){
+        if (isEmpty()) {
             return null;
         }
         Node first = front.next;
@@ -78,12 +78,12 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         first.next.prev = front;
         first.prev = first.next = null;
         size--;
-        return (Item)first.value;
+        return (Item) first.value;
     }
 
     @Override
     public Item removeLast() {
-        if(isEmpty()) {
+        if (isEmpty()) {
             return null;
         }
         Node last = rear.prev;
@@ -91,7 +91,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         last.prev.next = rear;
         last.prev = last.next = null;
         size--;
-        return (Item)last.value;
+        return (Item) last.value;
     }
 
     @Override
@@ -101,7 +101,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
             ptr = ptr.next;
             index -= 1;
         }
-        return (Item)ptr.value;
+        return (Item) ptr.value;
     }
 
     public Item getRecursive(int index) {
