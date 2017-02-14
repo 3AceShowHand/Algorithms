@@ -70,12 +70,28 @@ public class LinkedListDeque<Item> implements Deque<Item> {
 
     @Override
     public Item removeFirst() {
-        return null;
+        if(isEmpty()){
+            return null;
+        }
+        Node first = front.next;
+        front.next = first.next;
+        first.next.prev = front;
+        first.prev = first.next = null;
+        size--;
+        return (Item)first.value;
     }
 
     @Override
     public Item removeLast() {
-        return null;
+        if(isEmpty()) {
+            return null;
+        }
+        Node last = rear.prev;
+        rear.prev = last.prev;
+        last.prev.next = rear;
+        last.prev = last.next = null;
+        size--;
+        return (Item)last.value;
     }
 
     @Override
