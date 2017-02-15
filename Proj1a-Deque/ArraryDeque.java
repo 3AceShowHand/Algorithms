@@ -7,10 +7,13 @@ public class ArraryDeque<Item> implements Deque<Item> {
 
     private Item[] items;
     private int size;
+    private int front;
+    private int rear;
+
 
     public ArraryDeque() {
-        items = (Item[]) new Object[4];
-        size = 0;
+        items = (Item[]) new Object[8];
+        size = front = rear = 0;
     }
 
     @Override

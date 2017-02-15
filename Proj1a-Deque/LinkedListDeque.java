@@ -96,9 +96,11 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         return res;
     }
 
+    /**Gets the item at the given index, where 0 is the front, 1 is the next item, and so forth.
+     */
     @Override
     public Item get(int index) {
-        Node ptr = front.next;
+        Node ptr = front;
         while (index != 0) {
             ptr = ptr.next;
             index -= 1;
@@ -117,7 +119,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         if (index > size - 1) {
             return null;
         }
-        return getRecursive(index, front.next);
+        return getRecursive(index, front);
     }
 
 }

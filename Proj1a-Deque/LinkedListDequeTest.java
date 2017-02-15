@@ -54,6 +54,10 @@ public class LinkedListDequeTest {
 		lld1.addLast("back");
 		passed = checkSize(3, lld1.size()) && passed;
 
+		System.out.println("Print getRecursive result: ");
+		String recursiveGet = lld1.getRecursive(1);
+		System.out.println(recursiveGet);
+
 		System.out.println("Printing out deque: ");
 		lld1.printDeque();
 
