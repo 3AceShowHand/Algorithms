@@ -162,7 +162,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
     @Override
     public void printDeque() {
-        if (front <= rear) {
+        if (front < rear) {
             for( int i = front; i < rear; i++) {
                 System.out.print(items[i] + " ");
             }
@@ -176,10 +176,9 @@ public class ArrayDeque<Item> implements Deque<Item> {
         }
     }
 
-    
-
     @Override
     public Item get(int index) {
-        return null;
+        int pos = (front + index) % capacity;
+        return items[pos];
     }
 }
