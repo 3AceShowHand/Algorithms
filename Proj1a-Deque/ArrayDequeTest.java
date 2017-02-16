@@ -49,14 +49,14 @@ public class ArrayDequeTest {
 
     @Test
     public void shrinkTest() {
-//        ArrayDeque<String> deque = new ArrayDeque<>(8);
-//        deque.addLast("First");
-//        deque.addLast("Second");
-//        deque.addLast("Third");
-//        deque.removeLast();
-//
-//        String[] exp = new String[] {"First", "Second", null, null, null, null, null, null};
-//        assertArrayEquals(exp, deque.getItems());
+        ArrayDeque<String> deque = new ArrayDeque<>(16);
+        deque.addLast("First");
+        deque.addLast("Second");
+        deque.addLast("Third");
+        deque.removeLast();
+
+        String[] exp = new String[] {"First", "Second", null, null, null, null, null, null};
+        assertArrayEquals(exp, deque.getItems());
 
         ArrayDeque<String> deque1 = new ArrayDeque<>(16);
         deque1.addLast("First");
@@ -65,7 +65,7 @@ public class ArrayDequeTest {
         deque1.addLast("Forth");
         deque1.removeFirst();
 
-        String[] exp1 = new String[] { "Second", "Third", "Forth" };
+        String[] exp1 = new String[] { "Second", "Third", "Forth", null, null, null, null, null };
         assertArrayEquals(exp1, deque1.getItems());
     }
 

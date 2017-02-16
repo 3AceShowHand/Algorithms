@@ -32,41 +32,61 @@ public class ArrayDeque<Item> implements Deque<Item> {
     }
 
 
-    public void expand(int factor) {
-        int newCapacity = capacity * factor ;
+    public void expand() {
+        final int EXPAND_FACTOR = 2;
+        int newCapacity = capacity * EXPAND_FACTOR ;
         Item[] container = (Item[]) new Object[newCapacity];
         int idx = 0;
 
-        for(int i = front; i < capacity; i++) {
-            container[idx] = items[i];
-            idx++;
-        }
-        for(int i = 0; i < rear; i++) {
-            container[idx] = items[i];
-            idx += 1;
+        if (front < rear) {
+            for(int i = front; i < rear; i++) {
+                container[idx] = items[i];
+                idx++;
+            }
+        } else {
+            for(int i = front; i < capacity; i++) {
+                container[idx] = items[i];
+                idx++;
+            }
+            for(int i = 0; i < rear; i++) {
+                container[idx] = items[i];
+                idx += 1;
+            }
         }
 
         capacity = newCapacity;
         front = 0;
         rear = idx;
         items = container;
-
     }
 
     public void shrink() {
         double loadFactor = (double)size / capacity;
         if (loadFactor < 0.25 && capacity > 8) {
-            final double shrinkFactor = 0.5;
-            int newCapacity = (int)(shrinkFactor * capacity);
+            final double SHRINK_FACTOR = 0.5;
+            int newCapacity = (int)(SHRINK_FACTOR * capacity);
             Item[] container = (Item[]) new Object[newCapacity];
             int idx = 0;
 
             if(front > rear) {
                 for (int i = front; i < capacity; i++) {
-
+                    container[idx] = items[i];
+                    idx++;
+                }
+                for(int i = 0; i < rear; i++) {
+                    container[idx] = items[i];
+                    idx++;
+                }
+            } else {
+                for(int i = front; i < rear; i++) {
+                    container[idx] = items[i];
+                    idx++;
                 }
             }
-
+            front = 0;
+            rear = idx;
+            capacity = newCapacity;
+            items = container;
         }
     }
 
