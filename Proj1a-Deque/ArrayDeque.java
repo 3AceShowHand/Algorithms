@@ -1,5 +1,3 @@
-import java.util.Objects;
-
 /**
  * Created by Christopher on 2017/2/13.
  */
@@ -32,11 +30,11 @@ public class ArrayDeque<Item> implements Deque<Item> {
     }
 
     private void resize(double factor) {
-        int newCapacity = (int)(capacity * factor);
+        int newCapacity = (int) (capacity * factor);
         Item[] container = (Item[]) new Object[newCapacity];
         int idx = 0;
 
-        if(front < rear) {
+        if (front < rear) {
             for (int i = front; i < rear; i++) {
                 container[idx] = items[i];
                 idx++;
@@ -46,7 +44,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
                 container[idx] = items[i];
                 idx++;
             }
-            for(int i = 0; i < rear; i++) {
+            for (int i = 0; i < rear; i++) {
                 container[idx] = items[i];
                 idx++;
             }
@@ -55,7 +53,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
         rear = idx;
         capacity = newCapacity;
         items = container;
-     }
+    }
 
     public void expand() {
         final int EXPAND_FACTOR = 2;
@@ -63,7 +61,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
     }
 
     public void shrink() {
-        double loadFactor = (double)size / capacity;
+        double loadFactor = (double) size / capacity;
         if (loadFactor < 0.25 && capacity > 8) {
             final double SHRINK_FACTOR = 0.5;
             resize(SHRINK_FACTOR);
@@ -73,7 +71,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
     @Override
     public int size() {
         return size;
-}
+    }
 
     private boolean isFull() {
         return size == capacity;
@@ -92,8 +90,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
         if (front == 0) {
             front = capacity - 1;
-        }
-        else {
+        } else {
             front = front - 1;
         }
         items[front] = item;
@@ -143,14 +140,14 @@ public class ArrayDeque<Item> implements Deque<Item> {
     @Override
     public void printDeque() {
         if (front < rear) {
-            for( int i = front; i < rear; i++) {
+            for (int i = front; i < rear; i++) {
                 System.out.print(items[i] + " ");
             }
         } else {
-            for( int i = front; i < capacity; i++) {
+            for (int i = front; i < capacity; i++) {
                 System.out.print(items[i] + " ");
             }
-            for(int i = 0; i < rear; i++) {
+            for (int i = 0; i < rear; i++) {
                 System.out.print(items[i] + " ");
             }
         }
@@ -158,7 +155,10 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
     @Override
     public Item get(int index) {
-        int pos = (front + index) % capacity;
-        return items[pos];
+        if (index < capacity){
+            int pos = (front + index) % capacity;
+            return items[pos];
+        }
+        return null;
     }
 }
