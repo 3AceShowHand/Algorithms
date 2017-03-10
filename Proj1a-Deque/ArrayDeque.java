@@ -10,7 +10,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
     private int front;
     // rear always point to the position of next element to insert.
     private int rear;
-
+    
     private void init(int cap) {
         capacity = cap;
         size = front = rear = 0;
