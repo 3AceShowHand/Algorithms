@@ -26,6 +26,4 @@ public interface Deque<Item> {
 
     /** Gets the item at the given index*/
     Item get(int index);
-
-
 }
