@@ -1,5 +1,7 @@
 package DisjoinSet;
 
+import org.jetbrains.annotations.Contract;
+
 /**
  * Created by Christopher on 2017/4/3.
  */
@@ -11,11 +13,12 @@ public class WeightedQuickUnionSet implements DisjoinSet {
     public WeightedQuickUnionSet(int N) {
         parents = new int[N];
         size = new int[N];
-        for (int i = 0; i < parents.length; i++) {
+        for (int i = 0; i < N; i++) {
             parents[i] = i;
             size[i] = 1;
         }
     }
+
 
     private int findAncestor(int p) {
         while (parents[p] != p)
