@@ -5,7 +5,6 @@ package db;
  */
 public class Attribute {
 
-    //
     private String label;
     private String type;
 
