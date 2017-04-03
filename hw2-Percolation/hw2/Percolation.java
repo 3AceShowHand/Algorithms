@@ -6,9 +6,13 @@ public class Percolation {
 
     private site[][] grid;
     private int numberOfOpenSite;
+    private WeightedQuickUnionUF uf;
 
     /**initialize a grid of sites and the first row is fulled.*/
     public Percolation(int N) {
+        if (N <= 0) {
+            throw new IllegalArgumentException("The size of Percolation must positive");
+        }
         numberOfOpenSite = 0;
         grid = new site[N][N];
         for (int row = 0; row < N; row++){
@@ -32,7 +36,21 @@ public class Percolation {
         }
     }
 
+    private int xyTo1D(int row, int col) {
+        return row * grid.length + col;
+    }
+
+    private int getRow(int idx) {
+        return idx / grid.length;
+    }
+
+    private int getCol(int idx) {
+        return idx % grid.length;
+    }
+
     public void open(int row, int col) {
+        if (row < 0 || row >= grid.length) || (col < 0 || col >= grid.length)
+                throw new IndexOutOfBoundsException("row or col idx must between 0 and " + (grid.length - 1));
         grid[row][col].open = true;
         numberOfOpenSite += 1;
     }
