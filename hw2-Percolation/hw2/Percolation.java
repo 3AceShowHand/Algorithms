@@ -37,17 +37,12 @@ public class Percolation {
         return idx % grid.length;
     }
 
-//    //
-//    private boolean isNeighbor(int row1, int col1, int row2, int col2) {
-//        if ((Math.abs(row1 - row2) == 1) || (Math.abs(col1 - col2) == 1))
-//            return true;
-//        return false;
-//    }
-
+    //check the 2d index of a site in grid
     private boolean validate(int row, int col) {
         return (row >= 0 && row < grid.length) && (col >= 0 && col < grid.length);
     }
 
+    //get top, right, down, left neighbors 1d index if existed.
     private int[] getNeighborIdx1D(int row, int col) {
         int len = 4;
         if (row == 0 || row == grid.length-1) len -= 1;
@@ -75,6 +70,27 @@ public class Percolation {
     public void open(int row, int col) {
         if ((row < 0 || row >= grid.length) || (col < 0 || col >= grid.length))
                 throw new IndexOutOfBoundsException("row or col idx must between 0 and " + (grid.length - 1));
+
+        // open the certain site.
+        grid[row][col] = true;
+        count++;
+        int currentSiteIdx = xyTo1D(row, col);
+
+        //the first row always percolable.
+        if (row == 0) {
+            uf.union(top, currentSiteIdx);
+        }
+        //check the neighbors of current site.
+        int[] neighbors = getNeighborIdx1D(row, col);
+        for (int i = 0; i < neighbors.length; i++) {
+            int neighborIdx = neighbors[i];
+            int row2D = getRow(neighborIdx);
+            int col2D = getCol(neighborIdx);
+            if (isOpen(row2D, col2D) && !uf.connected(neighborIdx, currentSiteIdx)) {
+                uf.union(neighborIdx, currentSiteIdx);
+            }
+        }
+
     }
 
     public boolean isOpen(int row, int col) {
@@ -94,6 +110,12 @@ public class Percolation {
     }
 
     public boolean percolates() {
+        int size = grid.length;
+        for (int col = 0; col < size; col++) {
+            int currentSiteIdx = xyTo1D(size-1, col);
+            if (uf.find(currentSiteIdx) == top)
+                return true;
+        }
         return false;
     }
 
