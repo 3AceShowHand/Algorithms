@@ -1,6 +1,7 @@
 package hw2;
 
 
+import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import edu.princeton.cs.algs4.StdStats;
 
@@ -20,7 +21,7 @@ public class PercolationStats {
     }
 
     public PercolationStats(int N, int T) {
-        if (N < 0 || T <= 0)
+        if (N <= 0 || T <= 0)
             throw new IllegalArgumentException();
         size = N;
         times = T;
@@ -39,7 +40,7 @@ public class PercolationStats {
                     break;
                 }
             }
-            prob[trial] = perc.numberOfOpenSites() / order.length;
+            prob[trial] = perc.numberOfOpenSites() / (double)order.length;
         }
     }
 
@@ -57,6 +58,17 @@ public class PercolationStats {
 
     public double confidenceHigh() {
         return mean() + ((1.96 * stddev()) / Math.sqrt(times));
+    }
+
+    public static void main(String[] args) {
+        if (args.length < 2)
+            throw new IllegalArgumentException("Please give args of Percolation size and trials times");
+        int size = Integer.parseInt(args[0]);
+        int times = Integer.parseInt(args[1]);
+        PercolationStats stat = new PercolationStats(size, times);
+        StdOut.println("mean                    = " + stat.mean());
+        StdOut.println("stddev                  = " + stat.stddev());
+        StdOut.println("95% confidence interval = " + "[" + stat.confidenceLow() +", " + stat.confidenceHigh()+"]");
     }
 
 }                       
