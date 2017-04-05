@@ -6,20 +6,31 @@ import edu.princeton.cs.algs4.WeightedQuickUnionUF;
 public class Percolation {
 
     private int count;
-    private WeightedQuickUnionUF uf;
+    private WeightedQuickUnionUF tf, bf;
     private boolean[][] grid;
-    private int top;
+    private int top;  // first row connect to top
+    private int bottom; // last row connect to down
+
 
     /**initialize a grid of sites and the first row is fulled.*/
     public Percolation(int N) {
         if (N <= 0) {
             throw new IllegalArgumentException("The size of Percolation must positive");
         }
-        uf = new WeightedQuickUnionUF(N * N + 1);
         grid = new boolean[N][N];
-        count = 0;
-        //set the last item in the uf be the top.
+        tf = new WeightedQuickUnionUF(N * N + 1);
+        bf = new WeightedQuickUnionUF(N * N + 2);
         top = N * N;
+        bottom = top + 1;
+        count = 0;
+
+        for (int col = 0; col < N; col++){
+            tf.union(top, xyTo1D(0, col));
+            bf.union(top, xyTo1D(0, col));
+            bf.union(bottom, xyTo1D(N-1, col));
+        }
+
+
     }
 
     //convert 2d index to 1d
@@ -76,9 +87,10 @@ public class Percolation {
         count++;
         int currentSiteIdx = xyTo1D(row, col);
 
-        //the first row always percolable.
+        //the first row always percolatable.
         if (row == 0) {
-            uf.union(top, currentSiteIdx);
+            tf.union(top, currentSiteIdx);
+            bf.union(top, currentSiteIdx);
         }
         //check the neighbors of current site.
         int[] neighbors = getNeighborIdx1D(row, col);
@@ -86,8 +98,9 @@ public class Percolation {
             int neighborIdx = neighbors[i];
             int row2D = getRow(neighborIdx);
             int col2D = getCol(neighborIdx);
-            if (isOpen(row2D, col2D) && !uf.connected(neighborIdx, currentSiteIdx)) {
-                uf.union(neighborIdx, currentSiteIdx);
+            if (isOpen(row2D, col2D)) {
+                tf.union(neighborIdx, currentSiteIdx);
+                bf.union(neighborIdx, currentSiteIdx);
             }
         }
 
@@ -102,7 +115,8 @@ public class Percolation {
     public boolean isFull(int row, int col) {
         if ((row < 0 || row >= grid.length) || (col < 0 || col >= grid.length))
             throw new IndexOutOfBoundsException("row or col idx must between 0 and " + (grid.length - 1));
-        return uf.find(xyTo1D(row, col)) == top;
+//        return uf.find(xyTo1D(row, col)) == top;
+        return grid[row][col] && tf.connected(xyTo1D(row, col), top);
     }
 
     public int numberOfOpenSites() {
@@ -110,16 +124,6 @@ public class Percolation {
     }
 
     public boolean percolates() {
-        int size = grid.length;
-        for (int col = 0; col < size; col++) {
-            int currentSiteIdx = xyTo1D(size-1, col);
-            if (uf.find(currentSiteIdx) == top)
-                return true;
-        }
-        return false;
-    }
-
-    public static void main(String[] args) {
-
+        return bf.connected(top, bottom);
     }
 }                       
