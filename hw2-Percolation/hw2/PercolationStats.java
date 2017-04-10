@@ -7,10 +7,10 @@ import edu.princeton.cs.algs4.StdStats;
 
 public class PercolationStats {
 
-    Percolation perc;
-    int size;
-    int times;
-    double[] prob;
+    private Percolation perc;
+    private int size;
+    private int times;
+    private double[] prob;
 
     private int getRow(int idx) {
         return idx / size;
@@ -21,15 +21,16 @@ public class PercolationStats {
     }
 
     public PercolationStats(int N, int T) {
-        if (N <= 0 || T <= 0)
+        if (N <= 0 || T <= 0){
             throw new IllegalArgumentException();
+        }
         size = N;
         times = T;
         prob = new double[T];
         int[] order = new int[size * size];
-        for (int i = 0; i < order.length; i++)
+        for (int i = 0; i < order.length; i++) {
             order[i] = i;
-
+        }
         for (int trial = 0; trial < T; trial++) {
             perc = new Percolation(size);
             StdRandom.shuffle(order);
@@ -40,7 +41,7 @@ public class PercolationStats {
                     break;
                 }
             }
-            prob[trial] = perc.numberOfOpenSites() / (double)order.length;
+            prob[trial] = perc.numberOfOpenSites() / (double) order.length;
         }
     }
 
@@ -61,8 +62,9 @@ public class PercolationStats {
     }
 
     public static void main(String[] args) {
-        if (args.length < 2)
+        if (args.length < 2) {
             throw new IllegalArgumentException("Please give args of Percolation size and trials times");
+        }
         int size = Integer.parseInt(args[0]);
         int times = Integer.parseInt(args[1]);
         PercolationStats stat = new PercolationStats(size, times);
