@@ -2,10 +2,16 @@ import java.util.Iterator;
 
 public class Deque<Item> implements Iterable<Item> {
 
-    int count;
+    private int count;
+    private int front;
+    private int rear;
+    private int capacity;
+    private Item[] items;
 
-    public Deque() {
-
+    public Deque(int cap) {
+        count = front = rear = 0;
+        capacity = cap;
+        items = (Item[]) new Object[capacity];
     }
 
     public boolean isEmpty() {
