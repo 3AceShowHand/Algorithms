@@ -1,4 +1,4 @@
-package hw3.puzzle;
+package puzzle;
 
 public class Board {
 

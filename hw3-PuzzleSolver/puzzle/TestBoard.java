@@ -1,4 +1,4 @@
-package hw3.puzzle;
+package puzzle;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
