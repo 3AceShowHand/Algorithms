@@ -1,4 +1,4 @@
-package lab8;
+package BinarySearchTree;
 import java.util.TreeMap;
 import java.io.IOException;
 import java.util.Scanner;

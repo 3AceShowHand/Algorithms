@@ -1,4 +1,4 @@
-package lab8;
+package BinarySearchTree;
 
 import java.util.Iterator;
 import java.util.Set;

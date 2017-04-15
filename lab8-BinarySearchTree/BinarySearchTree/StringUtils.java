@@ -1,4 +1,4 @@
-package lab8;
+package BinarySearchTree;
 import java.util.regex.Pattern;
 import java.util.Random;
 
