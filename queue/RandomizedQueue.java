@@ -1,3 +1,5 @@
+import java.util.Iterator;
+
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
     int count;
@@ -27,6 +29,11 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     public Iterator<Item> iterator() {
+        return new RandomIter();
+    }
+
+    private class RandomIter implements Iterator<Item> {
+
 
     }
 
