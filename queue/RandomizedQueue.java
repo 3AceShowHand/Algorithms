@@ -1,5 +1,4 @@
 import edu.princeton.cs.algs4.StdRandom;
-
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
@@ -12,7 +11,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private Item[] items;
 
     public RandomizedQueue() {
-        count = front = rear = 0;
+        front = 0;
+        rear = 0;
+        count = 0;
         capacity = 4;
         items = (Item[]) new Object[capacity];
     }
@@ -30,47 +31,41 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
 
     private void expand() {
-        Item[] container = (Item[]) new Object[capacity*2];
-        if (front < rear) {
-            for (int idx = front; idx < rear; idx++){
-                container[idx] = items[idx];
-            }
-        } else {
-            for (int idx = front; front < capacity; front++){
-                container[idx] = items[idx];
-            }
-            for (int idx = 0; idx < rear; idx++){
-                container[idx] = items[idx];
-            }
+        Item[] container = (Item[]) new Object[capacity * 2];
+
+        int curr = 0;
+        for(int idx = front; idx < capacity; idx++) {
+            container[curr++] = items[idx];
         }
+
         capacity *= 2;
         items = container;
-    }
-
-    private void shrink() {
-        int size = (int) (capacity * 0.5);
-        Item[] container = (Item[]) new Object[size];
-        int curr = 0;
-        if (front < rear) {
-            for (int idx = front; idx < rear; idx++) {
-                container[curr++] = items[idx];
-            }
-        } else {
-            for (int idx = front; idx < capacity; idx++) {
-                container[curr++] = items[idx];
-            }
-            for (int idx = 0; idx < rear; idx++) {
-                container[curr++] = items[idx];
-            }
-        }
-
-        capacity = size;
-        items = container;
-        front = 0;
         rear = curr;
-
-
     }
+
+//    private void shrink() {
+//        int size = (int) (capacity * 0.5);
+//        Item[] container = (Item[]) new Object[size];
+//
+//        int curr = 0;
+//        if (front < rear) {
+//            for (int idx = front; idx < rear; idx++) {
+//                container[curr++] = items[idx];
+//            }
+//        } else {
+//            for (int idx = front; idx < capacity; idx++) {
+//                container[curr++] = items[idx];
+//            }
+//            for (int idx = 0; idx < rear; idx++) {
+//                container[curr++] = items[idx];
+//            }
+//        }
+//        capacity = size;
+//        items = container;
+//        front = 0;
+//        rear = curr;
+//
+//    }
 
     public void enqueue(Item item) {
         if (item == null) {
@@ -79,7 +74,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (isFull()) {
             expand();
         }
-        items[rear++] = item;
+        items[rear] = item;
+        rear = (rear + 1) % capacity;
         count++;
     }
 
@@ -93,10 +89,10 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         items[rear] = null;
         count--;
 
-        double loadFactor = (double) count / capacity;
-        if (capacity > 8 && loadFactor < 0.25) {
-            shrink();
-        }
+//        double loadFactor = (double) count / capacity;
+//        if (capacity > 8 && loadFactor < 0.25) {
+//            shrink();
+//        }
 
         return res;
     }
@@ -116,7 +112,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     private class RandomIter implements Iterator<Item> {
 
         private int idx;
-        private int orders[];
+        private int[] orders;
 
         private RandomIter() {
             idx = front;

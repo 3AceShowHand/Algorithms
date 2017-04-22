@@ -12,7 +12,9 @@ public class Deque<Item> implements Iterable<Item> {
     private Item[] items;
 
     public Deque() {
-        front = rear = count = 0;
+        front = 0;
+        rear = 0;
+        count = 0;
         capacity = 4;
         items = (Item[]) new Object[capacity];
     }
@@ -30,26 +32,25 @@ public class Deque<Item> implements Iterable<Item> {
     }
 
     private void expand() {
-        Item[] container = (Item[]) new Object[capacity*2];
-        if (front < rear) {
-            for (int idx = front; idx < rear; idx++){
-                container[idx] = items[idx];
-            }
-        } else {
-            for (int idx = front; front < capacity; front++){
-                container[idx] = items[idx];
-            }
-            for (int idx = 0; idx < rear; idx++){
-                container[idx] = items[idx];
-            }
+        Item[] container = (Item[]) new Object[capacity * 2];
+        int idx = 0;
+        for (int i = front; i < capacity; i++) {
+            container[idx++] = items[i];
         }
+        for (int i = 0; i < rear; i++) {
+            container[idx++] = items[i];
+        }
+
         capacity *= 2;
         items = container;
+        front = 0;
+        rear = idx;
     }
 
     private void shrink() {
         int size = (int) (capacity * 0.5);
         Item[] container = (Item[]) new Object[size];
+
         int curr = 0;
         if (front < rear) {
             for (int idx = front; idx < rear; idx++) {
@@ -63,12 +64,10 @@ public class Deque<Item> implements Iterable<Item> {
                 container[curr++] = items[idx];
             }
         }
-
         capacity = size;
         items = container;
         front = 0;
         rear = curr;
-
 
     }
 
@@ -79,10 +78,11 @@ public class Deque<Item> implements Iterable<Item> {
         if (isFull()) {
             expand();
         }
-        if (front == 0)
+        if (front == 0) {
             front = capacity - 1;
-        else
+        } else {
             front = front - 1;
+        }
         items[front] = item;
         count++;
     }
@@ -99,15 +99,15 @@ public class Deque<Item> implements Iterable<Item> {
         count++;
     }
 
-    private Item removeFirst() {
+    public Item removeFirst() {
         if (isEmpty()) {
             throw new java.util.NoSuchElementException("Cannot remove item from an empty deque");
         }
 
         Item res = items[front];
         items[front] = null;
-        count--;
-        if (front == capacity-1) {
+        count -= 1;
+        if (front == capacity - 1) {
             front = 0;
         } else {
             front += 1;
@@ -121,7 +121,7 @@ public class Deque<Item> implements Iterable<Item> {
         return res;
     }
 
-    private Item removeLast() {
+    public Item removeLast() {
         if (isEmpty()) {
             throw new java.util.NoSuchElementException("Cannot remove item from an empty deque");
         }
@@ -149,14 +149,16 @@ public class Deque<Item> implements Iterable<Item> {
     private class KeyIter implements Iterator<Item> {
 
         private int current;
+        private int trail;
 
         private KeyIter() {
             current = front;
+            trail = 0;
         }
 
         @Override
         public boolean hasNext() {
-            return current != rear;
+            return !(current == rear && trail == count);
         }
 
         @Override
@@ -166,6 +168,7 @@ public class Deque<Item> implements Iterable<Item> {
             }
             Item res = items[current];
             current = (current + 1) % capacity;
+            trail += 1;
             return res;
         }
 
