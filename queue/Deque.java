@@ -165,7 +165,7 @@ public class Deque<Item> implements Iterable<Item> {
                 throw new NoSuchElementException();
             }
             Item res = items[current];
-            current++;
+            current = (current + 1) % capacity;
             return res;
         }
 
