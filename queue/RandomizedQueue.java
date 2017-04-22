@@ -4,105 +4,70 @@ import java.util.NoSuchElementException;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
-    private int count;
-    private int front;
-    private int rear;
-    private int capacity;
+    private int size;
     private Item[] items;
 
     public RandomizedQueue() {
-        front = 0;
-        rear = 0;
-        count = 0;
-        capacity = 4;
-        items = (Item[]) new Object[capacity];
+        size = 0;
+        items = (Item[]) new Object[4];
     }
 
     public boolean isEmpty() {
-        return count == 0;
+        return size == 0;
     }
 
     private boolean isFull() {
-        return count == capacity;
+        return size == items.length;
     }
 
     public int size() {
-        return count;
-    }
-
-    private void expand() {
-        Item[] container = (Item[]) new Object[capacity * 2];
-
-        int curr = 0;
-        for(int idx = front; idx < capacity; idx++) {
-            container[curr++] = items[idx];
-        }
-
-        capacity *= 2;
-        items = container;
-        rear = curr;
-    }
-
-//    private void shrink() {
-//        int size = (int) (capacity * 0.5);
-//        Item[] container = (Item[]) new Object[size];
-//
-//        int curr = 0;
-//        if (front < rear) {
-//            for (int idx = front; idx < rear; idx++) {
-//                container[curr++] = items[idx];
-//            }
-//        } else {
-//            for (int idx = front; idx < capacity; idx++) {
-//                container[curr++] = items[idx];
-//            }
-//            for (int idx = 0; idx < rear; idx++) {
-//                container[curr++] = items[idx];
-//            }
-//        }
-//        capacity = size;
-//        items = container;
-//        front = 0;
-//        rear = curr;
-//
-//    }
-
-    public void enqueue(Item item) {
-        if (item == null) {
-            throw new NullPointerException("Enqueue a null item.");
-        }
-        if (isFull()) {
-            expand();
-        }
-        items[rear] = item;
-        rear = (rear + 1) % capacity;
-        count++;
-    }
-
-    public Item dequeue() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("The queue is empty.");
-        }
-        int order = StdRandom.uniform(count);
-        Item res = items[order];
-        items[order] = items[--rear];
-        items[rear] = null;
-        count--;
-
-//        double loadFactor = (double) count / capacity;
-//        if (capacity > 8 && loadFactor < 0.25) {
-//            shrink();
-//        }
-
-        return res;
+        return size;
     }
 
     public Item sample() {
         if (isEmpty()) {
             throw new NoSuchElementException("The queue is empty.");
         }
-        int order = StdRandom.uniform(count);
+        int order = StdRandom.uniform(size);
         return items[order];
+    }
+
+    public Item dequeue() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("The queue is empty.");
+        }
+
+        int selected = StdRandom.uniform(size);
+        Item res = items[selected];
+        items[selected] = items[--size];
+        items[size] = null;
+
+        double loadFactor = size / (float) items.length;
+        if (items.length > 8 && loadFactor < 0.25) {
+            int newSize = items.length / 2;
+            resize(newSize);
+        }
+
+        return res;
+    }
+
+    public void enqueue(Item item) {
+        if (item == null) {
+            throw new NullPointerException("Enqueue a null item.");
+        }
+        if (isFull()) {
+            resize(size*2);
+        }
+
+        items[size++] = item;
+    }
+
+    private void resize(int cap) {
+        Item[] container = (Item[]) new Object[cap];
+        for (int idx = 0; idx < size; idx++) {
+            container[idx] = items[idx];
+        }
+        items = container;
     }
 
     public Iterator<Item> iterator() {
@@ -115,8 +80,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         private int[] orders;
 
         private RandomIter() {
-            idx = front;
-            orders = new int[count];
+            idx = 0;
+            orders = new int[size];
             for (int i = 0; i < orders.length; i++) {
                 orders[i] = i;
             }
@@ -125,7 +90,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         @Override
         public boolean hasNext() {
-            return idx != rear;
+            return idx != size;
         }
 
         @Override
@@ -142,4 +107,13 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         }
     }
 
+    public static void main(String[] args) {
+        RandomizedQueue<Integer> rq = new RandomizedQueue<>();
+        for (int i = 0; i < 16; i++) {
+            rq.enqueue(i);
+        }
+        while (!rq.isEmpty()) {
+            rq.dequeue();
+        }
+    }
 }
