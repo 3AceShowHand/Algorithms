@@ -38,9 +38,9 @@ public class Point implements Comparable<Point> {
 
     public static int ccw(Point a, Point b, Point c) {
     	double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-	if (area2 < 0) return -1;      //clockwise
-	else if (area2 > 0) return 1;  //counterclockwise
-	else return 0;		       //collinear
+	    if (area2 < 0) return -1;      //clockwise
+	    else if (area2 > 0) return 1;  //counterclockwise
+	    else return 0;		       //collinear
     }
 
     /**
@@ -93,6 +93,7 @@ public class Point implements Comparable<Point> {
      */
     public Comparator<Point> slopeOrder() {
         /* YOUR CODE HERE */
+        return new BySlopeOrder();
     }
 
 
@@ -106,6 +107,13 @@ public class Point implements Comparable<Point> {
     public String toString() {
         /* DO NOT MODIFY */
         return "(" + x + ", " + y + ")";
+    }
+
+    private static class BySlopeOrder implements Comparator<Point> {
+        @Override
+        public int compare(Point o1, Point o2) {
+            return 0;
+        }
     }
 
     /**
