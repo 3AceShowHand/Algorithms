@@ -36,6 +36,13 @@ public class Point implements Comparable<Point> {
         StdDraw.point(x, y);
     }
 
+    public static int ccw(Point a, Point b, Point c) {
+    	double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+	if (area2 < 0) return -1;      //clockwise
+	else if (area2 > 0) return 1;  //counterclockwise
+	else return 0;		       //collinear
+    }
+
     /**
      * Draws the line segment between this point and the specified point
      * to standard draw.
