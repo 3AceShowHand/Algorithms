@@ -36,13 +36,6 @@ public class Point implements Comparable<Point> {
         StdDraw.point(x, y);
     }
 
-    public static int ccw(Point a, Point b, Point c) {
-    	double area2 = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-	    if (area2 < 0) return -1;      //clockwise
-	    else if (area2 > 0) return 1;  //counterclockwise
-	    else return 0;		       //collinear
-    }
-
     /**
      * Draws the line segment between this point and the specified point
      * to standard draw.
@@ -66,7 +59,15 @@ public class Point implements Comparable<Point> {
      * @return the slope between this point and the specified point
      */
     public double slopeTo(Point that) {
-        /* YOUR CODE HERE */
+        if (this.x == that.x && this.y == that.y) {
+            return Double.NEGATIVE_INFINITY;
+        } else if (this.x == that.x) {
+            return Double.POSITIVE_INFINITY;
+        } else if (this.y == that.y) {
+            return 0.0;
+        } else {
+            return (that.y - this.y) / (that.x - this.x);
+        }
     }
 
     /**
@@ -82,20 +83,14 @@ public class Point implements Comparable<Point> {
      *         argument point
      */
     public int compareTo(Point that) {
-        /* YOUR CODE HERE */
+        if ((this.y < that.y) || (this.y == that.y && this.x < that.x)) {
+            return -1;
+        } else if (this.x == that.x && this.y == that.y) {
+            return 0;
+        } else {
+            return 1;
+        }
     }
-
-    /**
-     * Compares two points by the slope they make with this point.
-     * The slope is defined as in the slopeTo() method.
-     *
-     * @return the Comparator that defines this ordering on points
-     */
-    public Comparator<Point> slopeOrder() {
-        /* YOUR CODE HERE */
-        return new BySlopeOrder();
-    }
-
 
     /**
      * Returns a string representation of this point.
@@ -107,6 +102,17 @@ public class Point implements Comparable<Point> {
     public String toString() {
         /* DO NOT MODIFY */
         return "(" + x + ", " + y + ")";
+    }
+
+    /**
+     * Compares two points by the slope they make with this point.
+     * The slope is defined as in the slopeTo() method.
+     *
+     * @return the Comparator that defines this ordering on points
+     */
+    public Comparator<Point> slopeOrder() {
+        /* YOUR CODE HERE */
+        return new BySlopeOrder();
     }
 
     private static class BySlopeOrder implements Comparator<Point> {
