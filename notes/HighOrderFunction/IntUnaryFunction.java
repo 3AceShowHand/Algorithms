@@ -1,4 +1,4 @@
-/**
+/*
  * IntUnaryFunction
  */
 public interface IntUnaryFunction {
