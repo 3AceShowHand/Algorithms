@@ -111,21 +111,16 @@ public class Point implements Comparable<Point> {
      * @return the Comparator that defines this ordering on points
      */
     public Comparator<Point> slopeOrder() {
-        /* YOUR CODE HERE */
         return new BySlopeOrder();
     }
 
-    private static class BySlopeOrder implements Comparator<Point> {
+    private class BySlopeOrder implements Comparator<Point> {
+
         @Override
         public int compare(Point o1, Point o2) {
-            return 0;
+            double slope1 = slopeTo(o1);
+            double slope2 = slopeTo(o2);
+            return Double.compare(slope1, slope2);
         }
-    }
-
-    /**
-     * Unit tests the Point data type.
-     */
-    public static void main(String[] args) {
-        /* YOUR CODE HERE */
     }
 }
