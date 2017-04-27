@@ -314,8 +314,12 @@ tramp
 proj3/img
 proj3/target
 <<<<<<< HEAD
+<<<<<<< HEAD
 >>>>>>> db5b5f86bb3e7d5d5857859317fe251c879eb43b
 =======
+=======
+*.osm
+>>>>>>> 9f0d580353a325919877837b197d633649e66370
 
 # Project 1B things
 words
