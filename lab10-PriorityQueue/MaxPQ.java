@@ -15,20 +15,25 @@ public class MaxPQ<Key extends Comparable<Key>> {
     public MaxPQ(Key[] a) {
     }
 
-    void insert(Key v) {
-
+    void insert(Key x) {
+        pq[++N] = x;
+        swim(N);
     }
 
     public Key delMax() {
-
+        Key max = pq[1];
+        exch(1, N--);
+        sink(1);
+        pq[N+1] = null;
+        return max;
     }
 
     public boolean isEmpty() {
-
+        return N == 0;
     }
 
     public Key max() {
-
+        return pq[1];
     }
 
     public int size() {
