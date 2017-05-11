@@ -80,6 +80,7 @@ coverage.xml
 
 # Django stuff:
 *.log
+*.pdf
 
 # Sphinx documentation
 docs/_build/

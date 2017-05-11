@@ -6,7 +6,7 @@ import java.util.Comparator;
  * Author:     Christopher
  * Written:    2017/4/23
  * This program solve the problem: Given a set of n distinct points in the plane,
- * find every (maximal) line segment that connects a subset of 4 or more of the points.
+ * find every (maximal) line segment that connects a subset of 4 points.
  */
 
 public class BruteCollinearPoints {
@@ -28,18 +28,19 @@ public class BruteCollinearPoints {
                 }
             }
         }
+        Arrays.sort(points);
 
-        Point[] copy = Arrays.copyOf(points, points.length);
-        Arrays.sort(copy);
+        //Point[] points = Arrays.pointsOf(points, points.length);
+        //Arrays.sort(points);
         ArrayList<LineSegment> lines = new ArrayList<>();
 
-        for (int p = 0; p < copy.length - 3; p++) {
-            for (int q = p + 1; q < copy.length - 2; q++) {
-                for (int r = q + 1; r < copy.length - 1; r++) {
-                    for (int s = r + 1; s < copy.length; s++) {
-                        Comparator<Point> pc = copy[p].slopeOrder();
-                        if ((pc.compare(copy[q], copy[r]) == 0) && (pc.compare(copy[q], copy[s]) == 0)) {
-                            LineSegment line = new LineSegment(copy[p], copy[s]);
+        for (int p = 0; p < points.length - 3; p++) {
+            for (int q = p + 1; q < points.length - 2; q++) {
+                for (int r = q + 1; r < points.length - 1; r++) {
+                    for (int s = r + 1; s < points.length; s++) {
+                        Comparator<Point> pc = points[p].slopeOrder();
+                        if ((pc.compare(points[q], points[r]) == 0) && (pc.compare(points[q], points[s]) == 0)) {
+                            LineSegment line = new LineSegment(points[p], points[s]);
                             lines.add(line);
                         }
                     }
@@ -60,7 +61,7 @@ public class BruteCollinearPoints {
      * the line segments
      */
     public LineSegment[] segments() {
-        return Arrays.copyOf(segments, segments.length);
+        return segments;
     }
 
     public static void main(String[] args) {
