@@ -12,11 +12,17 @@ public class FastCollinearPoints {
 
     /** find all line segments containing 4 or more points */
     public FastCollinearPoints(Point[] points) {
+        // Applying sort method to each point in the points in turn
 
     }
 
-    /** Sort points by slope to pivot point  */
-    private static void sort(Point[] points, Point pivot) {
+    /** Sort points by slope to pivot point
+     * Think p is the origin point.
+     * For each other point q, determine the slope it makes with p
+     * Sort points according to the slope they make with p. */
+    private static void sort(Point[] points, int lo, int hi) {
+        Point origin = points[0];
+
 
     }
 
@@ -24,13 +30,21 @@ public class FastCollinearPoints {
      * if the same slope to pivot, compare by y position. */
     private static int less(Point pivot, Point lhs, Point rhs) {
         Comparator<Point> pc = pivot.slopeOrder();
-        
+
         if (pc.compare(lhs, rhs) == 0) {
             return lhs.compareTo(rhs);
         } else {
             return pc.compare(lhs, rhs);
         }
     }
+
+    // exchange a[i] and a[j]
+    private static void exch(Object[] a, int i, int j) {
+        Object swap = a[i];
+        a[i] = a[j];
+        a[j] = swap;
+    }
+
 
     /** the number of line segments */
     public int numberOfSegments() {
