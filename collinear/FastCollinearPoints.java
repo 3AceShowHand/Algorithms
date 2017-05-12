@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+
 
 /**
  * Author:     Christopher
@@ -27,62 +27,46 @@ public class FastCollinearPoints {
             }
         }
 
-        Point[]
         // Applying sort method to each point in the points in turn
         for (int idx = 0; idx < points.length; idx++) {
             Point[] copy = Arrays.copyOf(points, points.length);
             exch(points, 0, idx);
+            Point origin = points[0];
             Point[] others = Arrays.copyOfRange(points,1, points.length);
-            sort(others, points[0]);
-        }
+            Arrays.sort(others, origin.slopeOrder());
 
-    }
+            // After sort others points by slope to origin point, find all adjacent tuples have more than 3 points
+            // and find the min and the max point.
+            int start = 0, end = 0;
+            int count = 1;
+            double currentSlope = origin.slopeTo(others[0]);
+            for (int i = 1; i < others.length; i++) {
+                double slope = origin.slopeTo(others[i]);
+                if (slope == currentSlope) {
+                    count += 1;
+                    end += 1;
+                } else {
+                    // find a subarray contain 3 or more points have the same slope to origin point.
+                    if ((end - start) >= 2) {
+                        ArrayList<Point> subPoints = new ArrayList<>();
+                    }
 
-    private static void sort(Point[] points, Point pivot) {
-        sort(points, 0, points.length-1, pivot);
-    }
-
-    /** Sort points by slope to pivot point
-     * Think p is the origin point.
-     * For each other point q, determine the slope it makes with p
-     * Sort points according to the slope they make with p. */
-    private static void sort(Point[] points, int lo, int hi, Point pivot) {
-        Point origin = points[0];
-        if (hi <= lo) {
-            return;
-        }
-        int j = partition(points, lo, hi);
-        sort(points, lo, j-1, pivot);
-        sort(points, j+1, hi, pivot);
-    }
-
-    private static int partition(Point[] points, int lo, int hi, Point pivot) {
-        int i = lo;
-        int j = hi+1;
-        while (true) {
+                    currentSlope = slope;
+                    count = 1;
+                    start = i;
+                    end = start;
+                }
+            }
 
         }
+
     }
 
-    /** compare two point by the slope to pivot point.
-     * if the same slope to pivot, compare by y position. */
-    private static int less(Point pivot, Point lhs, Point rhs) {
-        Comparator<Point> pc = pivot.slopeOrder();
-
-        if (pc.compare(lhs, rhs) == 0) {
-            return lhs.compareTo(rhs);
-        } else {
-            return pc.compare(lhs, rhs);
-        }
-    }
-
-    // exchange a[i] and a[j]
-    private static void exch(Object[] a, int i, int j) {
-        Object swap = a[i];
+    private static void exch(Point[] a, int i, int j) {
+        Point t = a[i];
         a[i] = a[j];
-        a[j] = swap;
+        a[j] = t;
     }
-
 
     /** the number of line segments */
     public int numberOfSegments() {
