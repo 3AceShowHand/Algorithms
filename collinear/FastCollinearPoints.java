@@ -32,20 +32,18 @@ public class FastCollinearPoints {
         // Applying sort method to each point in the points in turn
         for (int idx = 0; idx < points.length; idx++) {
             Point[] copy = Arrays.copyOf(points, points.length);
-            exch(points, 0, idx);
-            Point origin = points[0];
-            Point[] others = Arrays.copyOfRange(points,1, points.length);
+            exch(copy, 0, idx);
+            Point origin = copy[0];
+            Point[] others = Arrays.copyOfRange(copy,1, points.length);
             Arrays.sort(others, origin.slopeOrder());
 
             // After sort others points by slope to origin point, find all adjacent tuples have more than 3 points
             // and find the min and the max point.
             int start = 0, end = 0;
-            int count = 1;
             double currentSlope = origin.slopeTo(others[0]);
             for (int i = 1; i < others.length; i++) {
                 double slope = origin.slopeTo(others[i]);
                 if (slope == currentSlope) {
-                    count += 1;
                     end += 1;
                 } else {
                     // find a subarray contain 3 or more points have the same slope to origin point.
@@ -61,7 +59,6 @@ public class FastCollinearPoints {
                     }
 
                     currentSlope = slope;
-                    count = 1;
                     start = i;
                     end = start;
                 }
