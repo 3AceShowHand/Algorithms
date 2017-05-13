@@ -7,6 +7,7 @@ import java.util.Arrays;
  * This program solve the problem: Given a set of n distinct points in the plane,
  * find every (maximal) line segment that connects a subset of 4 or more of the points.
  */
+
 public class FastCollinearPoints {
 
     LineSegment[] segments;
@@ -72,26 +73,6 @@ public class FastCollinearPoints {
         a[j] = t;
     }
 
-    private static Point getStartPoint(ArrayList<Point> pts) {
-        Point start = pts.get(0);
-        for (Point p: pts) {
-            if (p.compareTo(start) == -1) {
-                start = p;
-            }
-        }
-        return start;
-    }
-
-    private static Point getEndPoint(ArrayList<Point> pts) {
-        Point end = pts.get(0);
-        for (Point p: pts) {
-            if (p.compareTo(end) == 1) {
-                end = p;
-            }
-        }
-        return end;
-    }
-
     /** the number of line segments */
     public int numberOfSegments() {
         return segments.length;
@@ -101,35 +82,4 @@ public class FastCollinearPoints {
     public LineSegment[] segments() {
         return segments;
     }
-
-    public static void main(String[] args) {
-
-        // read the n points from a file
-        In in = new In(args[0]);
-        int n = in.readInt();
-        Point[] points = new Point[n];
-        for (int i = 0; i < n; i++) {
-            int x = in.readInt();
-            int y = in.readInt();
-            points[i] = new Point(x, y);
-        }
-
-        // draw the points
-        StdDraw.enableDoubleBuffering();
-        StdDraw.setXscale(0, 32768);
-        StdDraw.setYscale(0, 32768);
-        for (Point p : points) {
-            p.draw();
-        }
-        StdDraw.show();
-
-        // print and draw the line segments
-        FastCollinearPoints collinear = new FastCollinearPoints(points);
-        for (LineSegment segment : collinear.segments()) {
-            StdOut.println(segment);
-            segment.draw();
-        }
-        StdDraw.show();
-    }
-
 }
