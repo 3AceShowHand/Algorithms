@@ -48,16 +48,20 @@ public class FastCollinearPoints {
                 } else {
                     // find a subarray contain 3 or more points have the same slope to origin point.
                     if ((end - start) >= 2) {
-                        ArrayList<Point> subPoints = new ArrayList<>();
-                        subPoints.add(origin);
-                        for (int k = start; k <= end; k++) {
-                            subPoints.add(others[k]);
-                        }
-                        Point startPoint = getStartPoint(subPoints);
-                        Point endPoint = getEndPoint(subPoints);
-                        lines.add(new LineSegment(startPoint, endPoint));
-                    }
+                        // if origin point lower than first point in the sub array.
+                        if (origin.compareTo(others[start]) == -1) {
 
+                            ArrayList<Point> subPoints = new ArrayList<>();
+                            subPoints.add(origin);
+                            for (int k = start; k <= end; k++) {
+                                subPoints.add(others[k]);
+                            }
+
+                            Point startPoint = getStartPoint(subPoints);
+                            Point endPoint = getEndPoint(subPoints);
+                            lines.add(new LineSegment(startPoint, endPoint));
+                        }
+                    }
                     currentSlope = slope;
                     start = i;
                     end = start;
