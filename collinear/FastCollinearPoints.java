@@ -10,13 +10,15 @@ import java.util.Arrays;
 
 public class FastCollinearPoints {
 
-    LineSegment[] segments;
+    private LineSegment[] segments;
 
     /** find all line segments containing 4 or more points */
     public FastCollinearPoints(Point[] points) {
 
         // Check input points without null reference and no duplicates.
-        if (points == null) throw new NullPointerException("Point is null");
+        if (points == null) {
+            throw new NullPointerException("Point is null");
+        }
         for (int idx = 0; idx < points.length; idx++) {
             if (points[idx] == null) {
                 throw new NullPointerException("Point in " + idx + " position is null");
@@ -35,25 +37,26 @@ public class FastCollinearPoints {
             Point[] copy = Arrays.copyOf(points, points.length);
             exch(copy, 0, idx);
             Point origin = copy[0];
-            Point[] others = Arrays.copyOfRange(copy,1, points.length);
+            Point[] others = Arrays.copyOfRange(copy, 1, points.length);
             Arrays.sort(others, origin.slopeOrder());
 
-            // After sort others points by slope to origin point, find all adjacent tuples have more than 3 points
-            // and find the min and the max point.
+            // After sort others points by slope to origin point,
+            // find all adjacent tuples have more than 3 points
+
             int start = 0, end = 0;
             double currentSlope = origin.slopeTo(others[0]);
             for (int i = 1; i < others.length; i++) {
                 double slope = origin.slopeTo(others[i]);
-                if (slope == currentSlope) {
+                if (Math.abs(slope - currentSlope) < 0.00001) {
                     end += 1;
                 } else {
                     // find a subarray contain 3 or more points have the same slope to origin point.
                     if ((end - start) >= 2) {
                         // if origin point lower than first point in the sub array.
-                        Point[] sub = Arrays.copyOfRange(others,start, end+1);
+                        Point[] sub = Arrays.copyOfRange(others, start, end + 1);
                         Arrays.sort(sub);
                         if (origin.compareTo(sub[0]) == -1) {
-                            Point endPoint = sub[sub.length-1];
+                            Point endPoint = sub[sub.length - 1];
                             lines.add(new LineSegment(origin, endPoint));
                         }
                     }
@@ -80,6 +83,6 @@ public class FastCollinearPoints {
 
     /** the line segments */
     public LineSegment[] segments() {
-        return segments;
+        return Arrays.copyOf(segments, segments.length);
     }
 }
