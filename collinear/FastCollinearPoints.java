@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 
-
 /**
  * Author:     Christopher
  * Written:    2017/4/23
@@ -30,10 +29,9 @@ public class FastCollinearPoints {
 
         ArrayList<LineSegment> lines = new ArrayList<>();
 
-        Point[] copy;
         // Applying sort method to each point in the points in turn
         for (int idx = 0; idx < points.length; idx++) {
-            copy = Arrays.copyOf(points, points.length);
+            Point[] copy = Arrays.copyOf(points, points.length);
             exch(points, 0, idx);
             Point origin = points[0];
             Point[] others = Arrays.copyOfRange(points,1, points.length);
@@ -70,7 +68,7 @@ public class FastCollinearPoints {
             }
 
         }
-
+        segments = lines.toArray(new LineSegment[lines.size()]);
     }
 
     private static void exch(Point[] a, int i, int j) {
@@ -107,6 +105,36 @@ public class FastCollinearPoints {
     /** the line segments */
     public LineSegment[] segments() {
         return segments;
+    }
+
+    public static void main(String[] args) {
+
+        // read the n points from a file
+        In in = new In(args[0]);
+        int n = in.readInt();
+        Point[] points = new Point[n];
+        for (int i = 0; i < n; i++) {
+            int x = in.readInt();
+            int y = in.readInt();
+            points[i] = new Point(x, y);
+        }
+
+        // draw the points
+        StdDraw.enableDoubleBuffering();
+        StdDraw.setXscale(0, 32768);
+        StdDraw.setYscale(0, 32768);
+        for (Point p : points) {
+            p.draw();
+        }
+        StdDraw.show();
+
+        // print and draw the line segments
+        FastCollinearPoints collinear = new FastCollinearPoints(points);
+        for (LineSegment segment : collinear.segments()) {
+            StdOut.println(segment);
+            segment.draw();
+        }
+        StdDraw.show();
     }
 
 }
