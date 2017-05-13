@@ -15,6 +15,7 @@ public class FastCollinearPoints {
     /** find all line segments containing 4 or more points */
     public FastCollinearPoints(Point[] points) {
 
+        // Check input points without null reference and no duplicates.
         if (points == null) throw new NullPointerException("Point is null");
         for (int idx = 0; idx < points.length; idx++) {
             if (points[idx] == null) {
@@ -27,9 +28,12 @@ public class FastCollinearPoints {
             }
         }
 
+        ArrayList<LineSegment> lines = new ArrayList<>();
+
+        Point[] copy;
         // Applying sort method to each point in the points in turn
         for (int idx = 0; idx < points.length; idx++) {
-            Point[] copy = Arrays.copyOf(points, points.length);
+            copy = Arrays.copyOf(points, points.length);
             exch(points, 0, idx);
             Point origin = points[0];
             Point[] others = Arrays.copyOfRange(points,1, points.length);
@@ -49,6 +53,13 @@ public class FastCollinearPoints {
                     // find a subarray contain 3 or more points have the same slope to origin point.
                     if ((end - start) >= 2) {
                         ArrayList<Point> subPoints = new ArrayList<>();
+                        subPoints.add(origin);
+                        for (int k = start; k <= end; k++) {
+                            subPoints.add(others[k]);
+                        }
+                        Point startPoint = getStartPoint(subPoints);
+                        Point endPoint = getEndPoint(subPoints);
+                        lines.add(new LineSegment(startPoint, endPoint));
                     }
 
                     currentSlope = slope;
@@ -66,6 +77,26 @@ public class FastCollinearPoints {
         Point t = a[i];
         a[i] = a[j];
         a[j] = t;
+    }
+
+    private static Point getStartPoint(ArrayList<Point> pts) {
+        Point start = pts.get(0);
+        for (Point p: pts) {
+            if (p.compareTo(start) == -1) {
+                start = p;
+            }
+        }
+        return start;
+    }
+
+    private static Point getEndPoint(ArrayList<Point> pts) {
+        Point end = pts.get(0);
+        for (Point p: pts) {
+            if (p.compareTo(end) == 1) {
+                end = p;
+            }
+        }
+        return end;
     }
 
     /** the number of line segments */
