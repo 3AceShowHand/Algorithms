@@ -4,6 +4,7 @@ import java.util.Arrays;
  * Author:     Christopher
  * Written:    2017/5/14
  */
+
 public class Board {
 
     private int[][] grid;
@@ -25,11 +26,11 @@ public class Board {
     }
 
     private int getRow(int idx) {
-        return idx / size;
+        return (idx-1) / size;
     }
 
     private int getCol(int idx) {
-        return idx % size - 1;
+        return (idx-1) % size;
     }
 
     // board dimension n
@@ -118,5 +119,7 @@ public class Board {
         Board initial = new Board(blocks);
 
         StdOut.println(initial);
+        StdOut.println(initial.hamming());
+        StdOut.println(initial.manhattan());
     }
 }
