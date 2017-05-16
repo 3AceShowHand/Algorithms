@@ -1,4 +1,5 @@
 import java.util.Arrays;
+import edu.princeton.cs.algs4.Queue;
 
 /**
  * Author:     Christopher
@@ -59,9 +60,11 @@ public class Board {
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
                 int value = tileAt(i, j);
-                int actualAtX = getRow(value);
-                int actualAtY = getCol(value);
-                distance += Math.abs(i - actualAtX) + Math.abs(j - actualAtY);
+                if (value != 0) {
+                    int actualAtX = getRow(value);
+                    int actualAtY = getCol(value);
+                    distance += Math.abs(i - actualAtX) + Math.abs(j - actualAtY);
+                }
             }
         }
         return distance;
@@ -87,12 +90,18 @@ public class Board {
 
 
     public boolean equals(Object y) {
-        return false;
+        if (y == this) return true;
+        if (y == null) return false;
+        if (y.getClass() != this.getClass()) return false;
+        Board that = (Board) y;
+        return (this.grid.equals(that.grid)) && (this.dimension() == that.dimension());
     }
 
-    // all neighboring boards
+    // all neighboring boards of certain search node, without happened twice.
     public Iterable<Board> neighbors() {
-        return null;
+        Queue<Board> neighbors = new Queue<>();
+
+        return neighbors;
     }
 
     public String toString() {
