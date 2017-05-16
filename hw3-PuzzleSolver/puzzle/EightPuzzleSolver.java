@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.StdOut;
 
 public class EightPuzzleSolver {
     /***********************************************************************
-     * Test routine for your Solver class. Uncomment and run to test
+     * Test routine for your puzzle.Solver class. Uncomment and run to test
      * your basic functionality.
     **********************************************************************/
     /*public static void main(String[] args) {
@@ -18,7 +18,7 @@ public class EightPuzzleSolver {
             }
         }
         Board initial = new Board(tiles);
-        Solver solver = new Solver(initial);
+        puzzle.Solver solver = new puzzle.Solver(initial);
         StdOut.println("Minimum number of moves = " + solver.moves());
         for (WorldState ws : solver.solution()) {
             StdOut.println(ws);
