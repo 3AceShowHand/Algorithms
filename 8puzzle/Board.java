@@ -20,23 +20,6 @@ public class Board {
         size = grid.length;
     }
 
-    // return the number at grid[i][j]
-    private int tileAt(int i, int j) {
-        return grid[i][j];
-    }
-
-    private int xyTo1D(int i, int j) {
-        return i * size + j + 1;
-    }
-
-    private int getRow(int idx) {
-        return (idx-1) / size;
-    }
-
-    private int getCol(int idx) {
-        return (idx-1) % size;
-    }
-
     // board dimension n
     public int dimension() {
         return size;
@@ -86,31 +69,18 @@ public class Board {
         return 0 == manhattan();
     }
 
-    private Boolean isBlock(int i, int j) {
-        return grid[i][j] != 0;
-    }
-
-    private void swap(int i, int j) {
-        int row1 = getRow(i);
-        int col1 = getCol(i);
-        int row2 = getRow(j);
-        int col2 = getCol(j);
-        int t = grid[row1][col1];
-        grid[row1][col1] = grid[row2][col2];
-        grid[row2][col2] = t;
-    }
-
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
         Board twin = new Board(this.grid);
-        int i = StdRandom.uniform(1, size*size);
-        int j = StdRandom.uniform(1, size*size);
+        int len = size * size;
+        int i = StdRandom.uniform(1, len);
+        int j = StdRandom.uniform(1, len);
 
         while (!isBlock(getRow(i), getCol(i))) {
-            i = StdRandom.uniform(1, size * size);
+            i = StdRandom.uniform(1, len);
         }
         while (j == i && !isBlock(getRow(j), getCol(j))) {
-            j = StdRandom.uniform(1, size*size);
+            j = StdRandom.uniform(1, len);
         }
 
         twin.swap(i, j);
@@ -118,9 +88,15 @@ public class Board {
     }
 
     public boolean equals(Object y) {
-        if (y == this) return true;
-        if (y == null) return false;
-        if (y.getClass() != this.getClass()) return false;
+        if (y == this) {
+            return true;
+        }
+        if (y == null) {
+            return false;
+        }
+        if (y.getClass() != this.getClass()) {
+            return false;
+        }
         Board that = (Board) y;
         return (this.grid.equals(that.grid)) && (this.dimension() == that.dimension());
     }
@@ -132,41 +108,27 @@ public class Board {
         int blankRow = getRow(blankPos);
         int blankCol = getCol(blankPos);
 
-        if (isValid(blankRow-1, blankCol)) {
+        if (isValid(blankRow - 1, blankCol)) {
             Board up = new Board(grid);
-            up.swap(xyTo1D(blankRow-1, blankCol), blankPos);
+            up.swap(xyTo1D(blankRow - 1, blankCol), blankPos);
             neighbors.add(up);
         }
-        if (isValid(blankRow+1, blankCol)) {
+        if (isValid(blankRow + 1, blankCol)) {
             Board down = new Board(grid);
-            down.swap(xyTo1D(blankRow+1, blankCol), blankPos);
+            down.swap(xyTo1D(blankRow + 1, blankCol), blankPos);
             neighbors.add(down);
         }
-        if (isValid(blankRow, blankCol-1)) {
+        if (isValid(blankRow, blankCol - 1)) {
             Board left = new Board(grid);
-            left.swap(xyTo1D(blankRow, blankCol-1), blankPos);
+            left.swap(xyTo1D(blankRow, blankCol - 1), blankPos);
             neighbors.add(left);
         }
-        if (isValid(blankRow, blankCol+1)) {
+        if (isValid(blankRow, blankCol + 1)) {
             Board right = new Board(grid);
-            right.swap(xyTo1D(blankRow, blankCol+1), blankPos);
+            right.swap(xyTo1D(blankRow, blankCol + 1), blankPos);
             neighbors.add(right);
         }
         return neighbors;
-    }
-
-    public int findPositionOf(int elem) {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (grid[i][j] == elem)
-                    return xyTo1D(i, j);
-            }
-        }
-        return -1;
-    }
-
-    private boolean isValid(int row, int col) {
-        return (row >= 0 && row <= size - 1) && (col >= 0 && col <= size - 1);
     }
 
     public String toString() {
@@ -183,17 +145,50 @@ public class Board {
         return s.toString();
     }
 
-    public static void main(String[] args) {
-        In in = new In(args[0]);
-        int n = in.readInt();
-        int[][] blocks = new int[n][n];
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
-                blocks[i][j] = in.readInt();
-        Board initial = new Board(blocks);
+    // return the number at grid[i][j]
+    private int tileAt(int i, int j) {
+        return grid[i][j];
+    }
 
-        StdOut.println(initial);
-        StdOut.println(initial.hamming());
-        StdOut.println(initial.manhattan());
+    // Convert 2d index to 1d
+    private int xyTo1D(int i, int j) {
+        return i * size + j + 1;
+    }
+
+    private int getRow(int idx) {
+        return (idx - 1) / size;
+    }
+
+    private int getCol(int idx) {
+        return (idx - 1) % size;
+    }
+
+    private int findPositionOf(int elem) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (grid[i][j] == elem) {
+                    return xyTo1D(i, j);
+                }
+            }
+        }
+        return -1;
+    }
+
+    private boolean isValid(int row, int col) {
+        return (row >= 0 && row <= size - 1) && (col >= 0 && col <= size - 1);
+    }
+
+    private Boolean isBlock(int i, int j) {
+        return grid[i][j] != 0;
+    }
+
+    private void swap(int i, int j) {
+        int row1 = getRow(i);
+        int col1 = getCol(i);
+        int row2 = getRow(j);
+        int col2 = getCol(j);
+        int t = grid[row1][col1];
+        grid[row1][col1] = grid[row2][col2];
+        grid[row2][col2] = t;
     }
 }
