@@ -25,4 +25,19 @@ public class Solver {
     public Iterable<Board> solution() {
         return null;
     }
+
+    private class SearchNode {
+        Board board;
+        int priority;
+        int numOfMove;
+        SearchNode previous;
+
+        private SearchNode(Board b, int priority, int move, SearchNode pre) {
+            this.board = b;
+            this.priority = priority;
+            this.numOfMove = move;
+            this.previous = pre;
+        }
+    }
+
 }

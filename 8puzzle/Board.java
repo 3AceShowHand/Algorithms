@@ -77,14 +77,15 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if (tileAt(i,j) != xyTo1D(i,j) && j != size - 1) {
-                    return false;
-                }
-            }
-        }
-        return true;
+//        for (int i = 0; i < size; i++) {
+//            for (int j = 0; j < size; j++) {
+//                if (tileAt(i,j) != xyTo1D(i,j) && j != size - 1) {
+//                    return false;
+//                }
+//            }
+//        }
+//        return true;
+        return 0 == manhattan();
     }
 
     private Boolean isBlock(int i, int j) {
