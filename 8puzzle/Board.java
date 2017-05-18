@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.Random;
+
 import edu.princeton.cs.algs4.Queue;
 
 /**
@@ -13,6 +15,9 @@ public class Board {
 
     // construct a board from an n-by-n array of blocks
     public Board(int[][] blocks) {
+        if (blocks == null) {
+            throw new NullPointerException();
+        }
         grid = Arrays.copyOf(blocks, blocks.length);
         size = grid.length;
     }
@@ -72,10 +77,9 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-        int N = size;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (tileAt(i,j) != xyTo1D(i,j) && j != size-1) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (tileAt(i,j) != xyTo1D(i,j) && j != size - 1) {
                     return false;
                 }
             }
@@ -83,11 +87,36 @@ public class Board {
         return true;
     }
 
-    // a board that is obtained by exchanging any pair of blocks
-    public Board twin() {
-        return null;
+    private Boolean isBlock(int i, int j) {
+        return grid[i][j] != 0;
     }
 
+    private void swap(int i, int j) {
+        int row1 = getRow(i);
+        int col1 = getCol(i);
+        int row2 = getRow(j);
+        int col2 = getCol(j);
+        int t = grid[row1][col1];
+        grid[row1][col1] = grid[row2][col2];
+        grid[row2][col2] = t;
+    }
+
+    // a board that is obtained by exchanging any pair of blocks
+    public Board twin() {
+        Board twin = new Board(this.grid);
+        int i = StdRandom.uniform(1, size*size);
+        int j = StdRandom.uniform(1, size*size);
+
+        while (!isBlock(getRow(i), getCol(i))) {
+            i = StdRandom.uniform(1, size * size);
+        }
+        while (j == i && !isBlock(getRow(j), getCol(j))) {
+            j = StdRandom.uniform(1, size*size);
+        }
+
+        twin.swap(i, j);
+        return twin;
+    }
 
     public boolean equals(Object y) {
         if (y == this) return true;
