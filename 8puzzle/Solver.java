@@ -28,6 +28,15 @@ public class Solver {
 
         ArrayList<SearchNode> records = new ArrayList<>();
         records.add(initialNode);
+
+        SearchNode current;
+        while (!pq.isEmpty()) {
+            current = pq.delMin();
+            Iterable<Board> newBoards = current.board.neighbors();
+            for (Board b: newBoards) {
+
+            }
+        }
     }
 
     // is the initial board solvable?
