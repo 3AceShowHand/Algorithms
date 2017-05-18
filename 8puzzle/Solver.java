@@ -9,6 +9,8 @@ import java.util.ArrayList;
 public class Solver {
 
     private int currentMove;
+    // sol is used to save all boards to find the goal
+    private ArrayList<Board> sol;
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -21,8 +23,8 @@ public class Solver {
         MinPQ<SearchNode> pq = new MinPQ<>();
         pq.insert(initialNode);
 
-        ArrayList<Board> trace = new ArrayList<>();
-        trace.add(initial);
+        sol = new ArrayList<>();
+        sol.add(initial);
 
         ArrayList<SearchNode> records = new ArrayList<>();
         records.add(initialNode);
@@ -47,7 +49,7 @@ public class Solver {
         if (!isSolvable()) {
             return null;
         } else {
-            return trace;
+            return sol;
         }
     }
 
