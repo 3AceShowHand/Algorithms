@@ -1,7 +1,5 @@
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
-
-import edu.princeton.cs.algs4.Queue;
 
 /**
  * Author:     Christopher
@@ -127,11 +125,48 @@ public class Board {
         return (this.grid.equals(that.grid)) && (this.dimension() == that.dimension());
     }
 
-    // all neighboring boards of certain search node, without happened twice.
+    // all neighboring boards of certain search node, without the same as privous board
     public Iterable<Board> neighbors() {
-        Queue<Board> neighbors = new Queue<>();
+        ArrayList<Board> neighbors = new ArrayList<>();
+        int blankPos = findPositionOf(0);
+        int blankRow = getRow(blankPos);
+        int blankCol = getCol(blankPos);
 
+        if (isValid(blankRow-1, blankCol)) {
+            Board up = new Board(grid);
+            up.swap(xyTo1D(blankRow-1, blankCol), blankPos);
+            neighbors.add(up);
+        }
+        if (isValid(blankRow+1, blankCol)) {
+            Board down = new Board(grid);
+            down.swap(xyTo1D(blankRow+1, blankCol), blankPos);
+            neighbors.add(down);
+        }
+        if (isValid(blankRow, blankCol-1)) {
+            Board left = new Board(grid);
+            left.swap(xyTo1D(blankRow, blankCol-1), blankPos);
+            neighbors.add(left);
+        }
+        if (isValid(blankRow, blankCol+1)) {
+            Board right = new Board(grid);
+            right.swap(xyTo1D(blankRow, blankCol+1), blankPos);
+            neighbors.add(right);
+        }
         return neighbors;
+    }
+
+    public int findPositionOf(int elem) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (grid[i][j] == elem)
+                    return xyTo1D(i, j);
+            }
+        }
+        return -1;
+    }
+
+    private boolean isValid(int row, int col) {
+        return (row >= 0 && row <= size - 1) && (col >= 0 && col <= size - 1);
     }
 
     public String toString() {
