@@ -1,11 +1,11 @@
 import edu.princeton.cs.algs4.MinPQ;
-
 import java.util.ArrayList;
 
 /**
  * Author:     Christopher
  * Written:    2017/5/14
  */
+
 public class Solver {
 
     private int currentMove;
@@ -16,9 +16,16 @@ public class Solver {
             throw new NullPointerException();
         }
         currentMove = 0;
-        MinPQ<SearchNode> pq = new MinPQ<>();
         SearchNode initialNode = new SearchNode(initial, initial.manhattan(), null);
+
+        MinPQ<SearchNode> pq = new MinPQ<>();
         pq.insert(initialNode);
+
+        ArrayList<Board> trace = new ArrayList<>();
+        trace.add(initial);
+
+        ArrayList<SearchNode> records = new ArrayList<>();
+        records.add(initialNode);
     }
 
     // is the initial board solvable?
@@ -31,7 +38,7 @@ public class Solver {
         if (!isSolvable()) {
             return -1;
         } else {
-
+            return currentMove;
         }
     }
 
@@ -40,11 +47,11 @@ public class Solver {
         if (!isSolvable()) {
             return null;
         } else {
-            ArrayList<Board> sol = new ArrayList<>();
+            return trace;
         }
     }
 
-    private class SearchNode {
+    private class SearchNode implements Comparable<SearchNode> {
 
         private Board board;
         private int priority;
@@ -54,6 +61,16 @@ public class Solver {
             this.board = b;
             this.priority = priority;
             this.previous = pre;
+        }
+
+        public int compareTo(SearchNode other) {
+            if (this.priority > other.priority) {
+                return 1;
+            } else if (this.priority == other.priority) {
+                return 0;
+            } else {
+                return -1;
+            }
         }
     }
 
