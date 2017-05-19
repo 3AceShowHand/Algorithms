@@ -20,8 +20,9 @@ public class Solver {
         }
         currentMove = 0;
         solvable = true;
+        Board initialTwin = initial.twin();
         SearchNode initialNode = new SearchNode(initial, currentMove + initial.manhattan(), null, false);
-        SearchNode initialTwinNode = new SearchNode(initial.twin(), currentMove + initial.twin().manhattan(), null, true);
+        SearchNode initialTwinNode = new SearchNode(initialTwin, currentMove + initialTwin.manhattan(), null, true);
 
         MinPQ<SearchNode> pq = new MinPQ<>();
         pq.insert(initialNode);
@@ -44,7 +45,7 @@ public class Solver {
                 currentMove += 1;
                 Iterable<Board> neighbors = current.board.neighbors();
                 for (Board b: neighbors) {
-                    if (!current.previous.equals(b)) {
+                    if (!current.previous.equals(b) || current.previous == null) {
                         pq.insert(new SearchNode(b, currentMove + b.manhattan(), current, current.isTwin));
                     }
                 }

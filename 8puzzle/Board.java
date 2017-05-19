@@ -71,7 +71,8 @@ public class Board {
 
     // a board that is obtained by exchanging any pair of blocks
     public Board twin() {
-        Board twin = new Board(this.grid);
+        int[][] tiles = deepCopyOf(grid);
+        Board twin = new Board(tiles);
         int len = size * size;
         int i = StdRandom.uniform(1, len);
         int j = StdRandom.uniform(1, len);
@@ -79,11 +80,11 @@ public class Board {
         while (!isBlock(getRow(i), getCol(i))) {
             i = StdRandom.uniform(1, len);
         }
-        while (j == i && !isBlock(getRow(j), getCol(j))) {
+        while (j == i || !isBlock(getRow(j), getCol(j))) {
             j = StdRandom.uniform(1, len);
         }
 
-        twin.swap(i, j);
+        swap(twin, i, j);
         return twin;
     }
 
@@ -109,23 +110,27 @@ public class Board {
         int blankCol = getCol(blankPos);
 
         if (isValid(blankRow - 1, blankCol)) {
-            Board up = new Board(grid);
-            up.swap(xyTo1D(blankRow - 1, blankCol), blankPos);
+            int[][] tiles = deepCopyOf(grid);
+            Board up = new Board(tiles);
+            swap(up, xyTo1D(blankRow - 1, blankCol), blankPos);
             neighbors.add(up);
         }
         if (isValid(blankRow + 1, blankCol)) {
-            Board down = new Board(grid);
-            down.swap(xyTo1D(blankRow + 1, blankCol), blankPos);
+            int[][] tiles = deepCopyOf(grid);
+            Board down = new Board(tiles);
+            swap(down, xyTo1D(blankRow + 1, blankCol), blankPos);
             neighbors.add(down);
         }
         if (isValid(blankRow, blankCol - 1)) {
-            Board left = new Board(grid);
-            left.swap(xyTo1D(blankRow, blankCol - 1), blankPos);
+            int[][] tiles = deepCopyOf(grid);
+            Board left = new Board(tiles);
+            swap(left, xyTo1D(blankRow, blankCol - 1), blankPos);
             neighbors.add(left);
         }
         if (isValid(blankRow, blankCol + 1)) {
-            Board right = new Board(grid);
-            right.swap(xyTo1D(blankRow, blankCol + 1), blankPos);
+            int[][] tiles = deepCopyOf(grid);
+            Board right = new Board(tiles);
+            swap(right, xyTo1D(blankRow, blankCol + 1), blankPos);
             neighbors.add(right);
         }
         return neighbors;
@@ -143,6 +148,14 @@ public class Board {
         }
         s.append("\n");
         return s.toString();
+    }
+
+    private static int[][] deepCopyOf(int[][] tiles) {
+        int[][] res = new int[tiles.length][];
+        for (int i = 0; i < tiles.length; i++) {
+            res[i] = Arrays.copyOf(tiles[i], tiles[i].length);
+        }
+        return res;
     }
 
     // return the number at grid[i][j]
@@ -182,13 +195,13 @@ public class Board {
         return grid[i][j] != 0;
     }
 
-    private void swap(int i, int j) {
-        int row1 = getRow(i);
-        int col1 = getCol(i);
-        int row2 = getRow(j);
-        int col2 = getCol(j);
-        int t = grid[row1][col1];
-        grid[row1][col1] = grid[row2][col2];
-        grid[row2][col2] = t;
+    private static void swap(Board b, int i, int j) {
+        int row1 = b.getRow(i);
+        int col1 = b.getCol(i);
+        int row2 = b.getRow(j);
+        int col2 = b.getCol(j);
+        int t = b.grid[row1][col1];
+        b.grid[row1][col1] = b.grid[row2][col2];
+        b.grid[row2][col2] = t;
     }
 }
