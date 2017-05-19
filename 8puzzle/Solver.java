@@ -11,6 +11,7 @@ public class Solver {
     private int currentMove;
     // sol is used to save all boards to find the goal
     private ArrayList<Board> sol;
+    private boolean solvable;
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -18,30 +19,42 @@ public class Solver {
             throw new NullPointerException();
         }
         currentMove = 0;
-        SearchNode initialNode = new SearchNode(initial, initial.manhattan(), null);
+        solvable = true;
+        SearchNode initialNode = new SearchNode(initial, currentMove + initial.manhattan(), null, false);
+        SearchNode initialTwinNode = new SearchNode(initial.twin(), currentMove + initial.twin().manhattan(), null, true);
 
         MinPQ<SearchNode> pq = new MinPQ<>();
         pq.insert(initialNode);
+        pq.insert(initialTwinNode);
 
         sol = new ArrayList<>();
         sol.add(initial);
 
-        ArrayList<SearchNode> records = new ArrayList<>();
-        records.add(initialNode);
-
         SearchNode current;
         while (!pq.isEmpty()) {
             current = pq.delMin();
-            Iterable<Board> newBoards = current.board.neighbors();
-            for (Board b: newBoards) {
-
+            if (current.board.isGoal()) {
+                sol.add(current.board);
+                if (current.isTwin) {
+                    solvable = false;
+                }
+                break;
+            } else {
+                sol.add(current.board);
+                currentMove += 1;
+                Iterable<Board> neighbors = current.board.neighbors();
+                for (Board b: neighbors) {
+                    if (!current.previous.equals(b)) {
+                        pq.insert(new SearchNode(b, currentMove + b.manhattan(), current, current.isTwin));
+                    }
+                }
             }
         }
     }
 
     // is the initial board solvable?
     public boolean isSolvable() {
-        return false;
+        return solvable;
     }
 
     // min number of moves to solve initial board; -1 if unsolvable
@@ -67,11 +80,13 @@ public class Solver {
         private Board board;
         private int priority;
         private SearchNode previous;
+        private boolean isTwin;
 
-        private SearchNode(Board b, int priority, SearchNode pre) {
+        private SearchNode(Board b, int priority, SearchNode pre, boolean isTwin) {
             this.board = b;
             this.priority = priority;
             this.previous = pre;
+            this.isTwin = isTwin;
         }
 
         public int compareTo(SearchNode other) {
@@ -83,6 +98,6 @@ public class Solver {
                 return -1;
             }
         }
-    }
 
+    }
 }
