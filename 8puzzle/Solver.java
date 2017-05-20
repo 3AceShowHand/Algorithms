@@ -1,4 +1,5 @@
 import edu.princeton.cs.algs4.MinPQ;
+import edu.princeton.cs.algs4.Stack;
 import java.util.ArrayList;
 
 /**
@@ -8,10 +9,11 @@ import java.util.ArrayList;
 
 public class Solver {
 
-    private int initialMove;
-    // sol is used to save all boards to find the goal
-    private ArrayList<Board> sol;
+    // record all board have been tracked.
+    private ArrayList<Board> records;
     private boolean solvable;
+    private Stack<Board> trace;
+    private SearchNode lastNode;
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -19,50 +21,43 @@ public class Solver {
             throw new NullPointerException();
         }
 
-        sol = new ArrayList<>();
-
+        records = new ArrayList<>();
+        trace = new Stack<>();
         solvable = true;
-        initialMove = 0;
-        int twinMove = 0;
-        Board initialTwin = initial.twin();
-        SearchNode initialNode = new SearchNode(initial, initialMove + initial.manhattan(), null, false);
-        SearchNode initialTwinNode = new SearchNode(initialTwin, twinMove + initialTwin.manhattan(), null, true);
 
+        SearchNode initialNode = new SearchNode(initial, 0, initial.manhattan(), null, false);
+        Board twin = initial.twin();
+        SearchNode twinNode = new SearchNode(twin, 0, twin.manhattan(), null, true);
         MinPQ<SearchNode> pq = new MinPQ<>();
         pq.insert(initialNode);
-        pq.insert(initialTwinNode);
+        pq.insert(twinNode);
 
-        SearchNode current;
+        SearchNode currentNode;
         while (!pq.isEmpty()) {
-            current = pq.delMin();
-            if (current.board.isGoal()) {
-                if (current.isTwin) {
+            currentNode = pq.delMin();
+            records.add(currentNode.board);
+            if (currentNode.board.isGoal()) {
+                if (currentNode.isTwin) {
                     solvable = false;
                 } else {
-                    sol.add(current.board);
+                    lastNode = currentNode;
+                    while (lastNode.previous != null) {
+                        trace.push(lastNode.board);
+                        lastNode = lastNode.previous;
+                    }
+                    trace.push(initial);
                 }
                 break;
             } else {
-                if (!current.isTwin) {
-                    initialMove += 1;
-                    sol.add(current.board);
-                    Iterable<Board> neighbors = current.board.neighbors();
-                    for (Board b: neighbors) {
-                        if (current.previous == null || !current.previous.board.equals(b)) {
-                            pq.insert(new SearchNode(b, initialMove + b.manhattan(), current, current.isTwin));
-                        }
-                    }
-                } else {
-                    twinMove += 1;
-                    Iterable<Board> neighbors = current.board.neighbors();
-                    for (Board b: neighbors) {
-                        if (current.previous == null || !current.previous.board.equals(b)) {
-                            pq.insert(new SearchNode(b, twinMove + b.manhattan(), current, current.isTwin));
-                        }
+                Iterable<Board> neighbors = currentNode.board.neighbors();
+                for (Board b: neighbors) {
+                    if (currentNode.previous == null || !currentNode.previous.board.equals(b)) {
+                        pq.insert(new SearchNode(b, 1 + currentNode.move, b.manhattan(), currentNode, currentNode.isTwin));
                     }
                 }
             }
         }
+
     }
 
     // is the initial board solvable?
@@ -75,7 +70,7 @@ public class Solver {
         if (!isSolvable()) {
             return -1;
         } else {
-            return initialMove;
+            return trace.size() - 1;
         }
     }
 
@@ -84,20 +79,22 @@ public class Solver {
         if (!isSolvable()) {
             return null;
         } else {
-            return sol;
+            return trace;
         }
     }
 
     private class SearchNode implements Comparable<SearchNode> {
 
         private Board board;
+        private int move;
         private int priority;
         private SearchNode previous;
         private boolean isTwin;
 
-        private SearchNode(Board b, int priority, SearchNode pre, boolean isTwin) {
+        private SearchNode(Board b, int move, int priority, SearchNode pre, boolean isTwin) {
             this.board = b;
-            this.priority = priority;
+            this.move = move;
+            this.priority = this.move + priority;
             this.previous = pre;
             this.isTwin = isTwin;
         }
