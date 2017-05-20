@@ -9,10 +9,9 @@ import java.util.ArrayList;
 
 public class Solver {
 
-    // record all board have been tracked.
-    private ArrayList<Board> records;
     private boolean solvable;
     private Stack<Board> trace;
+    // track the lastNode of the initial.
     private SearchNode lastNode;
 
     // find a solution to the initial board (using the A* algorithm)
@@ -21,7 +20,6 @@ public class Solver {
             throw new NullPointerException();
         }
 
-        records = new ArrayList<>();
         trace = new Stack<>();
         solvable = true;
 
@@ -35,7 +33,6 @@ public class Solver {
         SearchNode currentNode;
         while (!pq.isEmpty()) {
             currentNode = pq.delMin();
-            records.add(currentNode.board);
             if (currentNode.board.isGoal()) {
                 if (currentNode.isTwin) {
                     solvable = false;
