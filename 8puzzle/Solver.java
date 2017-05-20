@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class Solver {
 
-    private int currentMove;
+    private int initialMove;
     // sol is used to save all boards to find the goal
     private ArrayList<Board> sol;
     private boolean solvable;
@@ -18,35 +18,47 @@ public class Solver {
         if (initial == null) {
             throw new NullPointerException();
         }
-        currentMove = 0;
+
+        sol = new ArrayList<>();
+
         solvable = true;
+        initialMove = 0;
+        int twinMove = 0;
         Board initialTwin = initial.twin();
-        SearchNode initialNode = new SearchNode(initial, currentMove + initial.manhattan(), null, false);
-        SearchNode initialTwinNode = new SearchNode(initialTwin, currentMove + initialTwin.manhattan(), null, true);
+        SearchNode initialNode = new SearchNode(initial, initialMove + initial.manhattan(), null, false);
+        SearchNode initialTwinNode = new SearchNode(initialTwin, twinMove + initialTwin.manhattan(), null, true);
 
         MinPQ<SearchNode> pq = new MinPQ<>();
         pq.insert(initialNode);
         pq.insert(initialTwinNode);
 
-        sol = new ArrayList<>();
-        sol.add(initial);
-
         SearchNode current;
         while (!pq.isEmpty()) {
             current = pq.delMin();
             if (current.board.isGoal()) {
-                sol.add(current.board);
                 if (current.isTwin) {
                     solvable = false;
+                } else {
+                    sol.add(current.board);
                 }
                 break;
             } else {
-                sol.add(current.board);
-                currentMove += 1;
-                Iterable<Board> neighbors = current.board.neighbors();
-                for (Board b: neighbors) {
-                    if (!current.previous.equals(b) || current.previous == null) {
-                        pq.insert(new SearchNode(b, currentMove + b.manhattan(), current, current.isTwin));
+                if (!current.isTwin) {
+                    initialMove += 1;
+                    sol.add(current.board);
+                    Iterable<Board> neighbors = current.board.neighbors();
+                    for (Board b: neighbors) {
+                        if (current.previous == null || !current.previous.equals(b)) {
+                            pq.insert(new SearchNode(b, initialMove + b.manhattan(), current, current.isTwin));
+                        }
+                    }
+                } else {
+                    twinMove += 1;
+                    Iterable<Board> neighbors = current.board.neighbors();
+                    for (Board b: neighbors) {
+                        if (current.previous == null || !current.previous.equals(b)) {
+                            pq.insert(new SearchNode(b, twinMove + b.manhattan(), current, current.isTwin));
+                        }
                     }
                 }
             }
@@ -63,7 +75,7 @@ public class Solver {
         if (!isSolvable()) {
             return -1;
         } else {
-            return currentMove;
+            return initialMove;
         }
     }
 

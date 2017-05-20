@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import edu.princeton.cs.algs4.StdRandom;
 
 /**
  * Author:     Christopher
@@ -76,6 +77,7 @@ public class Board {
         int len = size * size;
         int i = StdRandom.uniform(1, len);
         int j = StdRandom.uniform(1, len);
+
 
         while (!isBlock(getRow(i), getCol(i))) {
             i = StdRandom.uniform(1, len);
