@@ -11,8 +11,6 @@ public class Solver {
 
     private boolean solvable;
     private Stack<Board> trace;
-    // track the lastNode of the initial.
-    private SearchNode lastNode;
 
     // find a solution to the initial board (using the A* algorithm)
     public Solver(Board initial) {
@@ -23,6 +21,8 @@ public class Solver {
         trace = new Stack<>();
         solvable = true;
 
+        // track the last node of initial's trace.
+        SearchNode lastNode;
         SearchNode initialNode = new SearchNode(initial, 0, initial.manhattan(), null, false);
         Board twin = initial.twin();
         SearchNode twinNode = new SearchNode(twin, 0, twin.manhattan(), null, true);
