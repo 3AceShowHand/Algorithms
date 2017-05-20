@@ -17,7 +17,7 @@ public class Board {
         if (blocks == null) {
             throw new NullPointerException();
         }
-        grid = Arrays.copyOf(blocks, blocks.length);
+        grid = deepCopyOf(blocks);
         size = grid.length;
     }
 
@@ -43,9 +43,8 @@ public class Board {
     // plus the number of moves made so far to get to the search node.
     public int manhattan() {
         int distance = 0;
-        int N = size;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 int value = tileAt(i, j);
                 if (value != 0) {
                     int actualAtX = getRow(value);
@@ -101,7 +100,7 @@ public class Board {
             return false;
         }
         Board that = (Board) y;
-        return (this.grid.equals(that.grid)) && (this.dimension() == that.dimension());
+        return (Arrays.deepEquals(grid, that.grid)) && (this.dimension() == that.dimension());
     }
 
     // all neighboring boards of certain search node, without the same as privous board
@@ -140,10 +139,9 @@ public class Board {
 
     public String toString() {
         StringBuilder s = new StringBuilder();
-        int N = size;
-        s.append(N + "\n");
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
+        s.append(size).append("\n");
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
                 s.append(String.format("%2d ", tileAt(i, j)));
             }
             s.append("\n");
@@ -193,7 +191,7 @@ public class Board {
         return (row >= 0 && row <= size - 1) && (col >= 0 && col <= size - 1);
     }
 
-    private Boolean isBlock(int i, int j) {
+    private boolean isBlock(int i, int j) {
         return grid[i][j] != 0;
     }
 

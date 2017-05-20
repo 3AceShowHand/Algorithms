@@ -48,7 +48,7 @@ public class Solver {
                     sol.add(current.board);
                     Iterable<Board> neighbors = current.board.neighbors();
                     for (Board b: neighbors) {
-                        if (current.previous == null || !current.previous.equals(b)) {
+                        if (current.previous == null || !current.previous.board.equals(b)) {
                             pq.insert(new SearchNode(b, initialMove + b.manhattan(), current, current.isTwin));
                         }
                     }
@@ -56,7 +56,7 @@ public class Solver {
                     twinMove += 1;
                     Iterable<Board> neighbors = current.board.neighbors();
                     for (Board b: neighbors) {
-                        if (current.previous == null || !current.previous.equals(b)) {
+                        if (current.previous == null || !current.previous.board.equals(b)) {
                             pq.insert(new SearchNode(b, twinMove + b.manhattan(), current, current.isTwin));
                         }
                     }
