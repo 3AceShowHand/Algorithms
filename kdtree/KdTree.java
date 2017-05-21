@@ -33,7 +33,7 @@ public class KdTree {
     }
 
     public void draw() {
-
+        StdDraw.setPenRadius();
     }
 
     public Iterable<Point2D> range(RectHV rect) {
