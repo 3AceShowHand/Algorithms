@@ -7,21 +7,53 @@ import edu.princeton.cs.algs4.RectHV;
  */
 public class KdTree {
 
+    private treeNode root;
+
+    private static class treeNode {
+        private Point2D point;
+        private boolean isVerticle;
+        private treeNode left;
+        private treeNode right;
+
+        public treeNode(Point2D p, boolean isVerticle) {
+            this.point = p;
+            this.isVerticle = isVerticle;
+        }
+
+    }
+
     public KdTree() {
 
     }
 
     public boolean isEmpty() {
-        return false;
+        return root == null;
     }
 
     public int size() {
-        return 0;
+        return size(root);
+    }
+
+    private static int size(treeNode n) {
+        if (n == null) {
+            return 0;
+        } else {
+            return 1 + size(n.left) + size(n.right);
+        }
     }
 
     public void insert(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for insert is null");
+        }
+
+    }
+
+    private treeNode insert(treeNode n, Point2D p) {
+        if (n == null) {
+            return new treeNode(p, true);
+        } else {
+            return null;
         }
     }
 
@@ -49,5 +81,4 @@ public class KdTree {
         }
         return null;
     }
-
 }
