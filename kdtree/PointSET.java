@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.SET;
 
 /**
  * Author:     Christopher
@@ -8,33 +9,35 @@ import edu.princeton.cs.algs4.RectHV;
 
 public class PointSET {
 
-    public PointSET() {
+    private SET<Point2D> set;
 
+    public PointSET() {
+        set = new SET<>();
     }
 
     public boolean isEmpty() {
-        return false;
+        return set.isEmpty();
     }
 
     public int size() {
-        return 0;
+        return set.size();
     }
 
     public void insert(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for insert is null");
         }
+        set.add(p);
     }
 
     public boolean contains(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for contains is null");
         }
-        return false;
+        return set.contains(p);
     }
 
     public void draw() {
-
     }
 
     public Iterable<Point2D> range(RectHV rect) {
@@ -48,7 +51,16 @@ public class PointSET {
         if (p == null) {
             throw new NullPointerException("Argument p for nearest is null");
         }
-        return null;
+        double distance = Double.POSITIVE_INFINITY;
+        Point2D res = null;
+        for (Point2D other: set) {
+            double currentDis = p.distanceSquaredTo(other);
+            if (currentDis < distance) {
+                distance = currentDis;
+                res = other;
+            }
+        }
+        return res;
     }
 
 }
