@@ -1,5 +1,7 @@
 package BinarySearchTree;
 
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Iterator;
 import java.util.Set;
 
@@ -12,27 +14,30 @@ public class BSTMap<Key extends Comparable<Key> , Value> implements Map61B<Key, 
 
     private Node root;
 
-
     private class Node {
         private Key key;
         private Value val;
         private Node left, right;
+        private int count;
 
-        public Node(Key key, Value val) {
+        public Node(Key key, Value val, int count) {
             this.key = key;
             this.val = val;
+            this.count = count;
         }
-
     }
 
     @Override
     public void clear() {
-
+        this.root = null;
     }
 
     @Override
     public boolean containsKey(Key key) {
-
+        if (key == null) {
+            throw new IllegalArgumentException("argument key is null");
+        }
+        return get(key) != null;
     }
 
     @Override
@@ -47,26 +52,54 @@ public class BSTMap<Key extends Comparable<Key> , Value> implements Map61B<Key, 
         return null;
     }
 
+    @Override
+    public void put(Key key, Value value) {
+        if (key == null) {
+            throw new IllegalArgumentException("argument Key is null");
+        } else {
+            if (value == null) {
+                remove(key);
+                return;
+            }
+            root = put(root, key, value);
+        }
+    }
+
     private Node put(Node x, Key key, Value val) {
-        if (x == null) return new Node(key, val);
+        if (x == null) return new Node(key, val, 1);
         int cmp = key.compareTo(x.key);
-        if (cmp < 0)
+        if (cmp < 0) {
             x.left = put(x.left, key, val);
-        else if (cmp > 0)
+        } else if (cmp > 0) {
             x.right = put(x.right, key, val);
-        else
+        } else {
             x.val = val;
+        }
+        x.count = size(x.left) + size(x.right) + 1;
         return x;
     }
 
-    @Override
-    public void put(Key key, Value value) {
-        root = put(root, key, value);
-    }
 
     @Override
     public int size() {
-        return 0;
+        return size(root);
+    }
+
+    private int size(Node n) {
+        if (n == null) {
+            return 0;
+        }
+        return n.count;
+    }
+
+    public void printInOrder() {
+        printInOrder(root);
+    }
+
+    private void printInOrder(Node n) {
+        printInOrder(n.left);
+        StdOut.println(n.key);
+        printInOrder(n.right);
     }
 
     @Override
