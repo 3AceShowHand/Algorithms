@@ -1,6 +1,7 @@
 package lab9;
 
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -10,36 +11,39 @@ import java.util.Set;
  */
 public class MyHashMap<Key extends Comparable<Key>, Value> implements Map61B<Key, Value> {
 
-    public MyHashMap() {
+    // holds all keys
+    private HashSet<Key> keys;
 
+    public MyHashMap() {
+        keys = new HashSet<>();
     }
 
     public MyHashMap(int initialSize) {
-
+        keys = new HashSet<>();
     }
 
     public MyHashMap(int intialSize, double loadFactor) {
-
+        keys = new HashSet<>();
     }
 
     @Override
     public int size() {
-        return 0;
+        return keys.size();
     }
 
     @Override
     public Set<Key> keySet() {
-        return null;
+        return keys;
     }
 
     @Override
     public Value remove(Key key) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public Value remove(Key key, Value value) {
-        return null;
+        throw new UnsupportedOperationException();
     }
 
     @Override
