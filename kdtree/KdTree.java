@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.SET;
 
 /**
@@ -22,6 +23,7 @@ public class KdTree {
             this.point = p;
             this.isVerticle = isVerticle;
             this.size = size;
+            this.rect = new RectHV(0, 0, 1, 1);
         }
 
         private TreeNode(Point2D p, int size) {
@@ -69,7 +71,19 @@ public class KdTree {
     }
 
     private RectHV makeRect(TreeNode parent, TreeNode p) {
-
+        if (parent.isVerticle) {
+            if (parent.left == p) {
+                return new RectHV(parent.rect.xmin(), parent.point.x(), parent.rect.ymin(), parent.rect.ymax());
+            } else {
+                return new RectHV(parent.point.x(), parent.rect.xmax(), parent.rect.ymin(), parent.rect.ymax());
+            }
+        } else {
+            if (parent.left == p) {
+                return new RectHV(parent.rect.xmin(), parent.rect.xmax(), parent.rect.ymin(), parent.point.y());
+            } else {
+                return new RectHV(parent.rect.xmin(), parent.rect.xmax(), parent.point.y(), parent.rect.ymax());
+            }
+        }
     }
 
     private TreeNode insert(TreeNode n, Point2D p) {
@@ -117,9 +131,25 @@ public class KdTree {
         }
     }
 
-
     public void draw() {
         StdDraw.setPenRadius();
+        Queue<TreeNode> nodes = new Queue<>();
+        nodes.enqueue(root);
+        while (!nodes.isEmpty()) {
+            TreeNode current = nodes.dequeue();
+            if (current.isVerticle) {
+                StdDraw.setPenColor(StdDraw.RED);
+            } else {
+                StdDraw.setPenColor(StdDraw.BLUE);
+            }
+            double halfX = (current.rect.xmax() - current.rect.xmin()) / 2;
+            double halfY = (current.rect.ymax() - current.rect.ymin()) / 2;
+            double xCenter = current.rect.xmin() + halfX;
+            double yCenter = current.rect.ymin() + halfY;
+            StdDraw.rectangle(xCenter, yCenter, halfX, halfY);
+            nodes.enqueue(current.left);
+            nodes.enqueue(current.right);
+        }
     }
 
     public Iterable<Point2D> range(RectHV rect) {
