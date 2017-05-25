@@ -1,5 +1,7 @@
+import edu.princeton.cs.algs4.BST;
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
+import edu.princeton.cs.algs4.SET;
 
 /**
  * Author:     Christopher
@@ -7,23 +9,40 @@ import edu.princeton.cs.algs4.RectHV;
  */
 public class KdTree {
 
-    private treeNode root;
+    private TreeNode root;
 
-    private static class treeNode {
+    private static class TreeNode implements Comparable<TreeNode> {
         private Point2D point;
         private boolean isVerticle;
-        private treeNode left;
-        private treeNode right;
+        private TreeNode left;
+        private TreeNode right;
+        private int size;
+        private RectHV rect;
 
-        public treeNode(Point2D p, boolean isVerticle) {
+        public TreeNode(Point2D p, boolean isVerticle, int size, RectHV rect) {
             this.point = p;
             this.isVerticle = isVerticle;
+            this.size = size;
+            this.rect = rect;
         }
 
+        @Override
+        public int compareTo(TreeNode other) {
+            // compare x-coordinate
+            // else y-coordinate
+            if (this.isVerticle) {
+                double thisX = this.point.x();
+                double thatX = other.point.x();
+                return Double.compare(thisX, thatX);
+            } else {
+                double thisY = this.point.y();
+                double thatY = other.point.y();
+                return Double.compare(thisY, thatY);
+            }
+        }
     }
 
     public KdTree() {
-
     }
 
     public boolean isEmpty() {
@@ -34,24 +53,21 @@ public class KdTree {
         return size(root);
     }
 
-    private static int size(treeNode n) {
-        if (n == null) {
-            return 0;
-        } else {
-            return 1 + size(n.left) + size(n.right);
-        }
+    private int size(TreeNode n) {
+        if (n == null) return 0;
+        return n.size;
     }
 
     public void insert(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for insert is null");
         }
-
+        root = insert(root, p);
     }
 
-    private treeNode insert(treeNode n, Point2D p) {
+    private TreeNode insert(TreeNode n, Point2D p) {
         if (n == null) {
-            return new treeNode(p, true);
+            return new TreeNode(p, true, 1, new RectHV(0,0,1, 1));
         } else {
             return null;
         }
@@ -72,7 +88,8 @@ public class KdTree {
         if (rect == null) {
             throw new NullPointerException("Argument rect for range is null");
         }
-        return null;
+        SET<Point2D> res = new SET<>();
+        return res;
     }
 
     public Point2D nearest(Point2D p) {

@@ -70,7 +70,7 @@ public class PointSET {
         Point2D res = null;
         for (Point2D other: set) {
             double currentDis = p.distanceSquaredTo(other);
-            if (currentDis < distance) {
+            if (Double.compare(currentDis, distance) < 0) {
                 distance = currentDis;
                 res = other;
             }
