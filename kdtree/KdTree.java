@@ -19,16 +19,19 @@ public class KdTree {
         private int size;
         private RectHV rect;
 
-        public TreeNode(Point2D p, boolean isVerticle, int size) {
-            this.point = p;
-            this.isVerticle = isVerticle;
-            this.size = size;
-            this.rect = new RectHV(0, 0, 1, 1);
-        }
-
         private TreeNode(Point2D p, int size) {
             this.point = p;
             this.size = size;
+        }
+
+        private TreeNode(Point2D p, boolean isVerticle, int size) {
+            this(p, size);
+            this.isVerticle = isVerticle;
+        }
+
+        public TreeNode(Point2D p, boolean isVerticle, int size, RectHV rect) {
+            this(p, isVerticle, size);
+            this.rect = rect;
         }
 
         @Override
@@ -70,6 +73,32 @@ public class KdTree {
         root = insert(root, p);
     }
 
+    private TreeNode insert(TreeNode n, Point2D p) {
+        if (p == null) {
+            throw new NullPointerException("Argument p for insert is null");
+        }
+        if (!contains(p)) {
+            if (n == null) {
+                RectHV rect = new RectHV(0, 0, 1, 1);
+                return new TreeNode(p, true, 1, rect);
+            } else {
+                TreeNode newNode = new TreeNode(p, true, 1);
+                if (goLeft(n, newNode)) {
+                    n.left = insert(n.left, p);
+                    n.left.isVerticle = !n.isVerticle;
+                    n.left.rect = makeRect(n, n.left);
+                } else {
+                    n.right = insert(n.right, p);
+                    n.right.isVerticle = !n.isVerticle;
+                    n.right.rect = makeRect(n, n.right);
+                }
+            }
+            n.size = 1 + size(n.left) + size(n.right);
+            return n;
+        }
+        return null;
+    }
+
     private RectHV makeRect(TreeNode parent, TreeNode p) {
         if (parent.isVerticle) {
             if (parent.left == p) {
@@ -86,51 +115,32 @@ public class KdTree {
         }
     }
 
-    private TreeNode insert(TreeNode n, Point2D p) {
-        if (n == null) {
-            return new TreeNode(p, true, 1);
-        } else {
-            TreeNode newNode = new TreeNode(p, true, 1);
-            int cmp = n.compareTo(newNode);
-            if (cmp < 0) {
-                n.left = insert(n.left, p);
-                n.left.isVerticle = !n.isVerticle;
-                n.left.rect = makeRect(n, n.left);
-            } else if (cmp > 0) {
-                n.right = insert(n.right, p);
-                n.right.isVerticle = !n.isVerticle;
-                n.right.rect = makeRect(n, n.right);
-            } else {
-                n.point = p;
-            }
-        }
-        n.size = 1 + size(n.left) + size(n.right);
-        return n;
+    private boolean goLeft(TreeNode parent, TreeNode that) {
+        return parent.compareTo(that) < 0;
     }
 
     public boolean contains(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for contains is null");
         }
-        return get(root, p) != null;
+        return get(root, p);
     }
 
-    private Point2D get(TreeNode n, Point2D p) {
+    private boolean get(TreeNode n, Point2D p) {
         if (n == null) {
-            return null;
+            return false;
+        }
+        TreeNode search = new TreeNode(p, 1);
+        if (n.point.equals(p)) {
+            return true;
+        } else if (goLeft(n, search)) {
+            return get(n.left, p);
         } else {
-            TreeNode t = new TreeNode(p, 1);
-            int cmp = n.compareTo(t);
-            if (cmp < 0) {
-                return get(n.left, p);
-            } else if (cmp > 0) {
-                return get(n.right, p);
-            } else {
-                return n.point;
-            }
+            return get(n.right, p);
         }
     }
 
+    // Level order traverse kdtree and draw the rectangle correspoding to each node
     public void draw() {
         StdDraw.setPenRadius();
         Queue<TreeNode> nodes = new Queue<>();
