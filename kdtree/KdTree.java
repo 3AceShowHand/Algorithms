@@ -162,6 +162,7 @@ public class KdTree {
         }
     }
 
+    // Filter subtree by level order the tree and check whether the point contained in the rectangle.
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) {
             throw new NullPointerException("Argument rect for range is null");
@@ -176,10 +177,10 @@ public class KdTree {
                     res.add(current.point);
                 }
             }
-            if (rect.intersects(current.left.rect)) {
+            if (current.left != null && rect.intersects(current.left.rect)) {
                 q.enqueue(current.left);
             }
-            if (rect.intersects(current.right.rect)) {
+            if (current.right != null && rect.intersects(current.right.rect)) {
                 q.enqueue(current.right);
             }
         }
@@ -190,7 +191,25 @@ public class KdTree {
         if (p == null) {
             throw new NullPointerException("Argument p for nearest is null");
         }
-        return null;
+        Point2D closest = null;
+        double currentDist = Double.POSITIVE_INFINITY;
+        Queue<TreeNode> q = new Queue<>();
+        q.enqueue(root);
+        while (!q.isEmpty()) {
+            TreeNode current = q.dequeue();
+            double dist = p.distanceSquaredTo(current.point);
+            if (Double.compare(dist, currentDist) < 0) {
+                closest = current.point;
+                currentDist = dist;
+            }
+            if (Double.compare(currentDist, current.left.rect.distanceSquaredTo(p)) >= 0) {
+                q.enqueue(current.left);
+            }
+            if (Double.compare(currentDist, current.right.rect.distanceSquaredTo(p)) >= 0) {
+                q.enqueue(current.right);
+            }
+        }
+        return closest;
     }
 
     public static void main(String[] args) {
