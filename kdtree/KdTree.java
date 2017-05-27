@@ -167,6 +167,22 @@ public class KdTree {
             throw new NullPointerException("Argument rect for range is null");
         }
         SET<Point2D> res = new SET<>();
+        Queue<TreeNode> q = new Queue<>();
+        q.enqueue(root);
+        while (!q.isEmpty()) {
+            TreeNode current = q.dequeue();
+            if (rect.intersects(current.rect)) {
+                if (rect.contains(current.point)) {
+                    res.add(current.point);
+                }
+            }
+            if (rect.intersects(current.left.rect)) {
+                q.enqueue(current.left);
+            }
+            if (rect.intersects(current.right.rect)) {
+                q.enqueue(current.right);
+            }
+        }
         return res;
     }
 
@@ -175,5 +191,9 @@ public class KdTree {
             throw new NullPointerException("Argument p for nearest is null");
         }
         return null;
+    }
+
+    public static void main(String[] args) {
+
     }
 }
