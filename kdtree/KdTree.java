@@ -202,22 +202,4 @@ public class KdTree {
             }
         }
     }
-
-    public static void main(String[] args) {
-        KdTree tree = new KdTree();
-        In in = new In(args[0]);
-
-        while (!in.isEmpty()) {
-            double x = in.readDouble();
-            double y = in.readDouble();
-            Point2D p = new Point2D(x, y);
-            tree.insert(p);
-        }
-
-        Point2D target = new Point2D(1, 0.4);
-        Point2D result = tree.nearest(target);
-        StdOut.println(result);
-
-    }
-
 }
