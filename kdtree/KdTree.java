@@ -170,14 +170,23 @@ public class KdTree {
         if (Double.compare(dist, closest.distanceSquaredTo(target)) < 0) {
             closest = current.point;
         }
-        TreeNode close, far;
+        TreeNode close = null;
+        TreeNode far = null;
         if ((current.isVerticle && (Double.compare(target.x(), current.point.x()) < 0))
                 || (!current.isVerticle && (Double.compare(target.y(), current.point.y()) < 0))) {
-            close = current.left;
-            far = current.right;
+            if (current.left != null) {
+                close = current.left;
+            }
+            if (current.right != null) {
+                far = current.right;
+            }
         } else {
-            close = current.right;
-            far = current.left;
+            if (current.right != null) {
+                close = current.right;
+            }
+            if (current.left != null) {
+                far = current.left;
+            }
         }
         closest = nearest(close, target, closest);
         closest = nearest(far, target, closest);
