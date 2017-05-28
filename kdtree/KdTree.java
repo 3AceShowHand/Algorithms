@@ -130,29 +130,6 @@ public class KdTree {
         }
     }
 
-    // Level order traverse kdtree and draw the rectangle correspoding to each node
-    public void draw() {
-        StdDraw.setPenRadius();
-        Queue<TreeNode> nodes = new Queue<>();
-        nodes.enqueue(root);
-        while (!nodes.isEmpty()) {
-            TreeNode current = nodes.dequeue();
-            if (current.isVerticle) {
-                StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.line(current.point.x(), current.rect.ymin(), current.point.x(), current.rect.ymax());
-            } else {
-                StdDraw.setPenColor(StdDraw.BLUE);
-                StdDraw.line(current.rect.xmin(), current.point.y(), current.rect.xmax(), current.point.y());
-            }
-            if (current.left != null) {
-                nodes.enqueue(current.left);
-            }
-            if (current.right != null) {
-                nodes.enqueue(current.right);
-            }
-        }
-    }
-
     // Filter subtree by level order the tree and check whether the point contained in the rectangle.
     public Iterable<Point2D> range(RectHV rect) {
         if (rect == null) {
@@ -182,8 +159,8 @@ public class KdTree {
         if (p == null) {
             throw new NullPointerException("Argument p for nearest is null");
         }
-        Point2D closest = null;
-        double currentDist = Double.POSITIVE_INFINITY;
+        Point2D closest = root.point;
+        double currentDist = p.distanceSquaredTo(closest);
         Queue<TreeNode> q = new Queue<>();
         q.enqueue(root);
         while (!q.isEmpty()) {
@@ -193,13 +170,54 @@ public class KdTree {
                 closest = current.point;
                 currentDist = dist;
             }
-            if (Double.compare(currentDist, current.left.rect.distanceSquaredTo(p)) >= 0) {
+            if (current.left != null && Double.compare(currentDist, current.left.rect.distanceSquaredTo(p)) >= 0) {
                 q.enqueue(current.left);
             }
-            if (Double.compare(currentDist, current.right.rect.distanceSquaredTo(p)) >= 0) {
+            if (current.right != null && Double.compare(currentDist, current.right.rect.distanceSquaredTo(p)) >= 0) {
                 q.enqueue(current.right);
             }
         }
         return closest;
     }
+
+    // Level order traverse kdtree and draw the rectangle correspoding to each node
+    public void draw() {
+        StdDraw.setPenRadius();
+        Queue<TreeNode> nodes = new Queue<>();
+        nodes.enqueue(root);
+        while (!nodes.isEmpty()) {
+            TreeNode current = nodes.dequeue();
+            if (current.isVerticle) {
+                StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.line(current.point.x(), current.rect.ymin(), current.point.x(), current.rect.ymax());
+            } else {
+                StdDraw.setPenColor(StdDraw.BLUE);
+                StdDraw.line(current.rect.xmin(), current.point.y(), current.rect.xmax(), current.point.y());
+            }
+            if (current.left != null) {
+                nodes.enqueue(current.left);
+            }
+            if (current.right != null) {
+                nodes.enqueue(current.right);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        KdTree tree = new KdTree();
+        In in = new In(args[0]);
+
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            tree.insert(p);
+        }
+
+        Point2D target = new Point2D(1, 0.4);
+        Point2D result = tree.nearest(target);
+        StdOut.println(result);
+
+    }
+
 }
