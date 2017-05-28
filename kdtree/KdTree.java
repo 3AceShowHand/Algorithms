@@ -21,10 +21,9 @@ public class KdTree {
         private RectHV rect;
 
 
-        private TreeNode(Point2D p, boolean isVerticle, RectHV rect) {
+        private TreeNode(Point2D p, boolean isVerticle) {
             this.point = p;
             this.isVerticle = isVerticle;
-            this.rect = rect;
         }
     }
 
@@ -48,7 +47,8 @@ public class KdTree {
         }
         if (root == null) {
             count++;
-            root = new TreeNode(p, true, makeRect(null, p));
+            root = new TreeNode(p, true);
+            root.rect = makeRect(null, p);
         } else {
             TreeNode current = root;
             while (true) {
@@ -57,14 +57,16 @@ public class KdTree {
                 } else if (goLeft(p, current)) {
                         if (current.left == null) {
                             count++;
-                            current.left = new TreeNode(p, !current.isVerticle,  makeRect(current, p));
+                            current.left = new TreeNode(p, !current.isVerticle);
+                            current.left.rect = makeRect(current, p);
                             break;
                         }
                         current = current.left;
                 } else {
                     if (current.right == null) {
                         count++;
-                        current.right = new TreeNode(p, !current.isVerticle, makeRect(current, p));
+                        current.right = new TreeNode(p, !current.isVerticle);
+                        current.right.rect = makeRect(current, p);
                         break;
                     }
                     current = current.right;
@@ -135,71 +137,86 @@ public class KdTree {
         if (rect == null) {
             throw new NullPointerException("Argument rect for range is null");
         }
-        SET<Point2D> res = new SET<>();
-        Queue<TreeNode> q = new Queue<>();
-        q.enqueue(root);
-        while (!q.isEmpty()) {
-            TreeNode current = q.dequeue();
-            if (rect.intersects(current.rect)) {
-                if (rect.contains(current.point)) {
-                    res.add(current.point);
-                }
-            }
-            if (current.left != null && rect.intersects(current.left.rect)) {
-                q.enqueue(current.left);
-            }
-            if (current.right != null && rect.intersects(current.right.rect)) {
-                q.enqueue(current.right);
+        SET<Point2D> set = new SET<>();
+        range(root, rect, set);
+
+        return set;
+    }
+
+    private void range(TreeNode current, RectHV rect, SET<Point2D> set) {
+        if (current == null) {
+            return;
+        }
+        if (current.rect.intersects(rect)) {
+            if (rect.contains(current.point)) {
+                set.add(current.point);
             }
         }
-        return res;
+        range(current.left, rect, set);
+        range(current.right, rect, set);
     }
 
     public Point2D nearest(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for nearest is null");
         }
-        Point2D closest = root.point;
-        double currentDist = p.distanceSquaredTo(closest);
-        Queue<TreeNode> q = new Queue<>();
-        q.enqueue(root);
-        while (!q.isEmpty()) {
-            TreeNode current = q.dequeue();
-            double dist = p.distanceSquaredTo(current.point);
-            if (Double.compare(dist, currentDist) < 0) {
-                closest = current.point;
-                currentDist = dist;
-            }
-            if (current.left != null && Double.compare(currentDist, current.left.rect.distanceSquaredTo(p)) >= 0) {
-                q.enqueue(current.left);
-            }
-            if (current.right != null && Double.compare(currentDist, current.right.rect.distanceSquaredTo(p)) >= 0) {
-                q.enqueue(current.right);
-            }
+        return nearest(root, p, root.point);
+    }
+
+    private Point2D nearest(TreeNode current, Point2D target, Point2D closest) {
+        if (current == null || Double.compare(current.rect.distanceSquaredTo(target), closest.distanceSquaredTo(target)) > 0) {
+            return closest;
         }
+        double dist = current.point.distanceSquaredTo(target);
+        if (Double.compare(dist, closest.distanceSquaredTo(target)) < 0) {
+            closest = current.point;
+        }
+        TreeNode close, far;
+        if ((current.isVerticle && (Double.compare(target.x(), current.point.x()) < 0)) ||
+                (!current.isVerticle && (Double.compare(target.y(), current.point.y()) < 0))) {
+            close = current.left;
+            far = current.right;
+        } else {
+            close = current.right;
+            far = current.left;
+        }
+        closest = nearest(close, target, closest);
+        closest = nearest(far, target, closest);
+
         return closest;
     }
 
     // Level order traverse kdtree and draw the rectangle correspoding to each node
     public void draw() {
         StdDraw.setPenRadius();
-        Queue<TreeNode> nodes = new Queue<>();
-        nodes.enqueue(root);
-        while (!nodes.isEmpty()) {
-            TreeNode current = nodes.dequeue();
-            if (current.isVerticle) {
-                StdDraw.setPenColor(StdDraw.RED);
-                StdDraw.line(current.point.x(), current.rect.ymin(), current.point.x(), current.rect.ymax());
-            } else {
-                StdDraw.setPenColor(StdDraw.BLUE);
-                StdDraw.line(current.rect.xmin(), current.point.y(), current.rect.xmax(), current.point.y());
-            }
-            if (current.left != null) {
-                nodes.enqueue(current.left);
-            }
-            if (current.right != null) {
-                nodes.enqueue(current.right);
-            }
+        draw(root);
+    }
+
+    private void draw(TreeNode current) {
+        if (current == null) {
+            return;
         }
+        if (current.isVerticle) {
+            StdDraw.setPenColor(StdDraw.RED);
+            StdDraw.line(current.point.x(), current.rect.ymin(), current.point.x(), current.rect.ymax());
+        } else {
+            StdDraw.setPenColor(StdDraw.BLUE);
+            StdDraw.line(current.rect.xmin(), current.point.y(), current.rect.xmax(), current.point.y());
+        }
+
+        draw(current.left);
+        draw(current.right);
+    }
+
+    public static void main(String[] args) {
+        KdTree t = new KdTree();
+        In in = new In(args[0]);
+        while (!in.isEmpty()) {
+            double x = in.readDouble();
+            double y = in.readDouble();
+            Point2D p = new Point2D(x, y);
+            t.insert(p);
+        }
+        t.draw();
     }
 }
