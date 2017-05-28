@@ -18,14 +18,12 @@ public class KdTree {
         private boolean isVerticle;
         private TreeNode left;
         private TreeNode right;
-        private int size;
         private RectHV rect;
 
 
-        private TreeNode(Point2D p, boolean isVerticle, int size, RectHV rect) {
+        private TreeNode(Point2D p, boolean isVerticle, RectHV rect) {
             this.point = p;
             this.isVerticle = isVerticle;
-            this.size = size;
             this.rect = rect;
         }
     }
@@ -48,29 +46,28 @@ public class KdTree {
         if (p == null) {
             throw new NullPointerException("Argument p for insert is null");
         }
-
         if (root == null) {
-            root = new TreeNode(p, true, 1, makeRect(null, p));
             count++;
+            root = new TreeNode(p, true, makeRect(null, p));
         } else {
             TreeNode current = root;
-            while (current != null) {
-                if (current.point.equals(p)) {
+            while (true) {
+                if (current.point.compareTo(p) == 0) {
                     return;
-                } else {
-                    if (goLeft(p, current)) {
+                } else if (goLeft(p, current)) {
                         if (current.left == null) {
-                            current.left = new TreeNode(p, !current.isVerticle, 1, makeRect(current, p));
                             count++;
+                            current.left = new TreeNode(p, !current.isVerticle,  makeRect(current, p));
+                            break;
                         }
                         current = current.left;
-                    } else {
-                        if (current.right == null) {
-                            current.right = new TreeNode(p, !current.isVerticle, 1, makeRect(current, p));
-                            count++;
-                        }
-                        current = current.right;
+                } else {
+                    if (current.right == null) {
+                        count++;
+                        current.right = new TreeNode(p, !current.isVerticle, makeRect(current, p));
+                        break;
                     }
+                    current = current.right;
                 }
             }
         }
@@ -84,26 +81,29 @@ public class KdTree {
         }
     }
 
+    private boolean onBound(Point2D p) {
+        return (Double.compare(p.x(), 0.0) == 0 || Double.compare(p.x(), 1.0) == 0 ||
+                Double.compare(p.y(), 0.0) == 0 || Double.compare(p.y(), 1.0) == 0);
+    }
+
     private RectHV makeRect(TreeNode parent, Point2D p) {
         RectHV rect;
-        if (parent == null) {
+        if (parent == null || p == null) {
             rect = new RectHV(0, 0, 1, 1);
+        } else if (onBound(p)) {
+            rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
         } else {
             if (parent.isVerticle) {
                 if (parent.left != null && parent.left.point.equals(p)) {
-                    double xmax = Math.max(parent.point.x(), parent.rect.xmax());
-                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), xmax, parent.rect.ymax());
+                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.point.x(), parent.rect.ymax());
                 } else {
-                    double xmin = Math.min(parent.point.x(), parent.rect.xmin());
-                    rect = new RectHV(xmin, parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
+                    rect = new RectHV(parent.point.x(), parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
                 }
             } else {
                 if (parent.left != null && parent.left.point.equals(p)) {
-                    double ymax = Math.max(parent.point.y(), parent.rect.ymax());
-                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.rect.xmax(), ymax);
+                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.rect.xmax(), parent.point.y());
                 } else {
-                    double ymin = Math.min(parent.point.y(), parent.rect.ymin());
-                    rect = new RectHV(parent.rect.xmin(), ymin, parent.rect.xmax(), parent.rect.ymax());
+                    rect = new RectHV(parent.rect.xmin(), parent.point.y(), parent.rect.xmax(), parent.rect.ymax());
                 }
             }
         }
