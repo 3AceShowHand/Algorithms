@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.StdDraw;
 
@@ -55,13 +54,13 @@ public class KdTree {
                 if (current.point.compareTo(p) == 0) {
                     return;
                 } else if (goLeft(p, current)) {
-                        if (current.left == null) {
-                            count++;
-                            current.left = new TreeNode(p, !current.isVerticle);
-                            current.left.rect = makeRect(current, p);
-                            break;
-                        }
-                        current = current.left;
+                    if (current.left == null) {
+                        count++;
+                        current.left = new TreeNode(p, !current.isVerticle);
+                        current.left.rect = makeRect(current, p);
+                        break;
+                    }
+                    current = current.left;
                 } else {
                     if (current.right == null) {
                         count++;
@@ -84,8 +83,8 @@ public class KdTree {
     }
 
     private boolean onBound(Point2D p) {
-        return (Double.compare(p.x(), 0.0) == 0 || Double.compare(p.x(), 1.0) == 0 ||
-                Double.compare(p.y(), 0.0) == 0 || Double.compare(p.y(), 1.0) == 0);
+        return (Double.compare(p.x(), 0.0) == 0 || Double.compare(p.x(), 1.0) == 0
+                || Double.compare(p.y(), 0.0) == 0 || Double.compare(p.y(), 1.0) == 0);
     }
 
     private RectHV makeRect(TreeNode parent, Point2D p) {
@@ -172,8 +171,8 @@ public class KdTree {
             closest = current.point;
         }
         TreeNode close, far;
-        if ((current.isVerticle && (Double.compare(target.x(), current.point.x()) < 0)) ||
-                (!current.isVerticle && (Double.compare(target.y(), current.point.y()) < 0))) {
+        if ((current.isVerticle && (Double.compare(target.x(), current.point.x()) < 0))
+                || (!current.isVerticle && (Double.compare(target.y(), current.point.y()) < 0))) {
             close = current.left;
             far = current.right;
         } else {
@@ -206,17 +205,5 @@ public class KdTree {
 
         draw(current.left);
         draw(current.right);
-    }
-
-    public static void main(String[] args) {
-        KdTree t = new KdTree();
-        In in = new In(args[0]);
-        while (!in.isEmpty()) {
-            double x = in.readDouble();
-            double y = in.readDouble();
-            Point2D p = new Point2D(x, y);
-            t.insert(p);
-        }
-        t.draw();
     }
 }
