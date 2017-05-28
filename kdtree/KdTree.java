@@ -2,6 +2,7 @@ import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
 import edu.princeton.cs.algs4.Queue;
 import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.StdDraw;
 
 /**
  * Author:     Christopher
@@ -19,26 +20,19 @@ public class KdTree {
         private int size;
         private RectHV rect;
 
-        private TreeNode(Point2D p, int size) {
+
+        private TreeNode(Point2D p, boolean isVerticle, int size) {
             this.point = p;
+            this.isVerticle = isVerticle;
             this.size = size;
         }
 
-        private TreeNode(Point2D p, boolean isVerticle, int size) {
-            this(p, size);
-            this.isVerticle = isVerticle;
-        }
-
-        public TreeNode(Point2D p, boolean isVerticle, int size, RectHV rect) {
-            this(p, isVerticle, size);
-            this.rect = rect;
-        }
 
         @Override
         public int compareTo(TreeNode other) {
             // compare x-coordinate
             // else y-coordinate
-            if (this.isVerticle) {
+            if (other.isVerticle) {
                 double thisX = this.point.x();
                 double thatX = other.point.x();
                 return Double.compare(thisX, thatX);
@@ -71,6 +65,7 @@ public class KdTree {
             throw new NullPointerException("Argument p for insert is null");
         }
         root = insert(root, p);
+        addRect();
     }
 
     private TreeNode insert(TreeNode n, Point2D p) {
@@ -79,44 +74,84 @@ public class KdTree {
         }
         if (!contains(p)) {
             if (n == null) {
-                RectHV rect = new RectHV(0, 0, 1, 1);
-                return new TreeNode(p, true, 1, rect);
+                n = new TreeNode(p, true, 1);
             } else {
                 TreeNode newNode = new TreeNode(p, true, 1);
-                if (goLeft(n, newNode)) {
+                if (goLeft(newNode, n)) {
                     n.left = insert(n.left, p);
-                    n.left.isVerticle = !n.isVerticle;
-                    n.left.rect = makeRect(n, n.left);
                 } else {
                     n.right = insert(n.right, p);
-                    n.right.isVerticle = !n.isVerticle;
-                    n.right.rect = makeRect(n, n.right);
                 }
             }
             n.size = 1 + size(n.left) + size(n.right);
             return n;
+        } else {
+            return null;
         }
-        return null;
+    }
+
+    private boolean goLeft(TreeNode kid, TreeNode parent) {
+        return kid.compareTo(parent) < 0;
+    }
+
+    private void addRect() {
+        Queue<TreeNode> q = new Queue<>();
+        q.enqueue(root);
+        while (!q.isEmpty()) {
+            TreeNode current = q.dequeue();
+            TreeNode parent = getParent(root, current);
+            if (current.rect == null) {
+                current.rect = makeRect(parent, current);
+                if (parent != null) {
+                    current.isVerticle = ! parent.isVerticle;
+                }
+            }
+            if (current.left != null) {
+                q.enqueue(current.left);
+            }
+            if (current.right != null) {
+                q.enqueue(current.right);
+            }
+        }
+    }
+
+    private TreeNode getParent(TreeNode n, TreeNode that) {
+        if (n == null) {
+            return null;
+        }
+        if (that == root) {
+            return null;
+        } else {
+            if (n.left == that || n.right == that) {
+                return n;
+            } else if (goLeft(that, n)) {
+                return getParent(n.left, n);
+            } else {
+                return getParent(n.right, n);
+            }
+        }
     }
 
     private RectHV makeRect(TreeNode parent, TreeNode p) {
-        if (parent.isVerticle) {
-            if (parent.left == p) {
-                return new RectHV(parent.rect.xmin(), parent.point.x(), parent.rect.ymin(), parent.rect.ymax());
-            } else {
-                return new RectHV(parent.point.x(), parent.rect.xmax(), parent.rect.ymin(), parent.rect.ymax());
-            }
+        RectHV rect;
+        if (parent == null) {
+            rect = new RectHV(0, 0, 1, 1);
         } else {
-            if (parent.left == p) {
-                return new RectHV(parent.rect.xmin(), parent.rect.xmax(), parent.rect.ymin(), parent.point.y());
+            if (parent.isVerticle) {
+                if (parent.left == p) {
+                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.point.x(), parent.rect.ymax());
+                } else {
+                    rect = new RectHV(parent.point.x(), parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
+                }
             } else {
-                return new RectHV(parent.rect.xmin(), parent.rect.xmax(), parent.point.y(), parent.rect.ymax());
+                if (parent.left == p) {
+                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.rect.xmax(), parent.point.y());
+                } else {
+                    rect = new RectHV(parent.rect.xmin(), parent.point.y(), parent.rect.xmax(), parent.rect.ymax());
+                }
             }
         }
-    }
-
-    private boolean goLeft(TreeNode parent, TreeNode that) {
-        return parent.compareTo(that) < 0;
+        return rect;
     }
 
     public boolean contains(Point2D p) {
@@ -130,10 +165,10 @@ public class KdTree {
         if (n == null) {
             return false;
         }
-        TreeNode search = new TreeNode(p, 1);
+        TreeNode search = new TreeNode(p, true, 1);
         if (n.point.equals(p)) {
             return true;
-        } else if (goLeft(n, search)) {
+        } else if (goLeft(search, n)) {
             return get(n.left, p);
         } else {
             return get(n.right, p);
@@ -149,16 +184,17 @@ public class KdTree {
             TreeNode current = nodes.dequeue();
             if (current.isVerticle) {
                 StdDraw.setPenColor(StdDraw.RED);
+                StdDraw.line(current.point.x(), current.rect.ymin(), current.point.x(), current.rect.ymax());
             } else {
                 StdDraw.setPenColor(StdDraw.BLUE);
+                StdDraw.line(current.rect.xmin(), current.point.y(), current.rect.xmax(), current.point.y());
             }
-            double halfX = (current.rect.xmax() - current.rect.xmin()) / 2;
-            double halfY = (current.rect.ymax() - current.rect.ymin()) / 2;
-            double xCenter = current.rect.xmin() + halfX;
-            double yCenter = current.rect.ymin() + halfY;
-            StdDraw.rectangle(xCenter, yCenter, halfX, halfY);
-            nodes.enqueue(current.left);
-            nodes.enqueue(current.right);
+            if (current.left != null) {
+                nodes.enqueue(current.left);
+            }
+            if (current.right != null) {
+                nodes.enqueue(current.right);
+            }
         }
     }
 
@@ -212,7 +248,4 @@ public class KdTree {
         return closest;
     }
 
-    public static void main(String[] args) {
-
-    }
 }
