@@ -227,6 +227,7 @@ public class KdTree {
         if (p == null) {
             throw new NullPointerException("Argument p for nearest is null");
         }
+<<<<<<< HEAD
         Point2D closest = null;
         double currentDist = Double.POSITIVE_INFINITY;
         Queue<TreeNode> q = new Queue<>();
@@ -246,6 +247,17 @@ public class KdTree {
             }
         }
         return closest;
+=======
+        double currentDist = Double.POSITIVE_INFINITY;
+        Queue<TreeNode> q = new Queue<>();
+        q.enqueue(root);
+        while(!q.isEmpty()) {
+            TreeNode current = q.dequeue();
+            if (p.distanceSquareTo(current.point)) {
+            
+            }
+        }
+>>>>>>> c847faadb878b0ea8d8429b60862d60379373f9d
     }
 
 }
