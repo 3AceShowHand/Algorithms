@@ -12,7 +12,7 @@ public class KdTree {
 
     private TreeNode root;
 
-    private static class TreeNode implements Comparable<TreeNode> {
+    private static class TreeNode {
         private Point2D point;
         private boolean isVerticle;
         private TreeNode left;
@@ -25,22 +25,6 @@ public class KdTree {
             this.point = p;
             this.isVerticle = isVerticle;
             this.size = size;
-        }
-
-
-        @Override
-        public int compareTo(TreeNode other) {
-            // compare x-coordinate
-            // else y-coordinate
-            if (other.isVerticle) {
-                double thisX = this.point.x();
-                double thatX = other.point.x();
-                return Double.compare(thisX, thatX);
-            } else {
-                double thisY = this.point.y();
-                double thatY = other.point.y();
-                return Double.compare(thisY, thatY);
-            }
         }
     }
 
@@ -56,7 +40,9 @@ public class KdTree {
     }
 
     private int size(TreeNode n) {
-        if (n == null) return 0;
+        if (n == null) {
+            return 0;
+        }
         return n.size;
     }
 
@@ -76,8 +62,7 @@ public class KdTree {
             if (n == null) {
                 n = new TreeNode(p, true, 1);
             } else {
-                TreeNode newNode = new TreeNode(p, true, 1);
-                if (goLeft(newNode, n)) {
+                if (goLeft(p, n)) {
                     n.left = insert(n.left, p);
                 } else {
                     n.right = insert(n.right, p);
@@ -90,8 +75,12 @@ public class KdTree {
         }
     }
 
-    private boolean goLeft(TreeNode kid, TreeNode parent) {
-        return kid.compareTo(parent) < 0;
+    private boolean goLeft(Point2D kid, TreeNode parent) {
+        if (parent.isVerticle) {
+            return Double.compare(kid.x(), parent.point.x()) < 0;
+        } else {
+            return Double.compare(kid.y(), parent.point.y()) < 0;
+        }
     }
 
     private void addRect() {
@@ -103,7 +92,7 @@ public class KdTree {
             if (current.rect == null) {
                 current.rect = makeRect(parent, current);
                 if (parent != null) {
-                    current.isVerticle = ! parent.isVerticle;
+                    current.isVerticle = !parent.isVerticle;
                 }
             }
             if (current.left != null) {
@@ -116,15 +105,12 @@ public class KdTree {
     }
 
     private TreeNode getParent(TreeNode n, TreeNode that) {
-        if (n == null) {
-            return null;
-        }
-        if (that == root) {
+        if (n == null || that == null) {
             return null;
         } else {
             if (n.left == that || n.right == that) {
                 return n;
-            } else if (goLeft(that, n)) {
+            } else if (goLeft(that.point, n)) {
                 return getParent(n.left, n);
             } else {
                 return getParent(n.right, n);
@@ -165,10 +151,12 @@ public class KdTree {
         if (n == null) {
             return false;
         }
-        TreeNode search = new TreeNode(p, true, 1);
+        if (p == null) {
+            return false;
+        }
         if (n.point.equals(p)) {
             return true;
-        } else if (goLeft(search, n)) {
+        } else if (goLeft(p, n)) {
             return get(n.left, p);
         } else {
             return get(n.right, p);
@@ -247,5 +235,27 @@ public class KdTree {
         }
         return closest;
     }
+
+//    public static void main(String[] args) {
+//        KdTree tree = new KdTree();
+//        In in = new In(args[0]);
+//
+//        while (!in.isEmpty()) {
+//            double x = in.readDouble();
+//            double y = in.readDouble();
+//            Point2D p = new Point2D(x, y);
+//            tree.insert(p);
+//        }
+//
+//        Point2D target = new Point2D(0.2, 0.5);
+//        boolean t = tree.contains(target);
+//
+//        if (t) {
+//            StdOut.println("find target");
+//        } else {
+//            StdOut.print("contain works wrong");
+//        }
+//
+//    }
 
 }
