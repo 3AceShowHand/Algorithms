@@ -11,6 +11,7 @@ import edu.princeton.cs.algs4.StdDraw;
 public class KdTree {
 
     private TreeNode root;
+    private int count;
 
     private static class TreeNode {
         private Point2D point;
@@ -21,14 +22,17 @@ public class KdTree {
         private RectHV rect;
 
 
-        private TreeNode(Point2D p, boolean isVerticle, int size) {
+        private TreeNode(Point2D p, boolean isVerticle, int size, RectHV rect) {
             this.point = p;
             this.isVerticle = isVerticle;
             this.size = size;
+            this.rect = rect;
         }
     }
 
     public KdTree() {
+        root = null;
+        count = 0;
     }
 
     public boolean isEmpty() {
@@ -36,42 +40,39 @@ public class KdTree {
     }
 
     public int size() {
-        return size(root);
+        return count;
     }
 
-    private int size(TreeNode n) {
-        if (n == null) {
-            return 0;
-        }
-        return n.size;
-    }
 
     public void insert(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for insert is null");
         }
-        root = insert(root, p);
-        addRect();
-    }
 
-    private TreeNode insert(TreeNode n, Point2D p) {
-        if (p == null) {
-            throw new NullPointerException("Argument p for insert is null");
-        }
-        if (!contains(p)) {
-            if (n == null) {
-                n = new TreeNode(p, true, 1);
-            } else {
-                if (goLeft(p, n)) {
-                    n.left = insert(n.left, p);
+        if (root == null) {
+            root = new TreeNode(p, true, 1, makeRect(null, p));
+            count++;
+        } else {
+            TreeNode current = root;
+            while (current != null) {
+                if (current.point.equals(p)) {
+                    return;
                 } else {
-                    n.right = insert(n.right, p);
+                    if (goLeft(p, current)) {
+                        if (current.left == null) {
+                            current.left = new TreeNode(p, !current.isVerticle, 1, makeRect(current, p));
+                            count++;
+                        }
+                        current = current.left;
+                    } else {
+                        if (current.right == null) {
+                            current.right = new TreeNode(p, !current.isVerticle, 1, makeRect(current, p));
+                            count++;
+                        }
+                        current = current.right;
+                    }
                 }
             }
-            n.size = 1 + size(n.left) + size(n.right);
-            return n;
-        } else {
-            return null;
         }
     }
 
@@ -83,57 +84,26 @@ public class KdTree {
         }
     }
 
-    private void addRect() {
-        Queue<TreeNode> q = new Queue<>();
-        q.enqueue(root);
-        while (!q.isEmpty()) {
-            TreeNode current = q.dequeue();
-            TreeNode parent = getParent(root, current);
-            if (current.rect == null) {
-                current.rect = makeRect(parent, current);
-                if (parent != null) {
-                    current.isVerticle = !parent.isVerticle;
-                }
-            }
-            if (current.left != null) {
-                q.enqueue(current.left);
-            }
-            if (current.right != null) {
-                q.enqueue(current.right);
-            }
-        }
-    }
-
-    private TreeNode getParent(TreeNode n, TreeNode that) {
-        if (n == null || that == null) {
-            return null;
-        } else {
-            if (n.left == that || n.right == that) {
-                return n;
-            } else if (goLeft(that.point, n)) {
-                return getParent(n.left, n);
-            } else {
-                return getParent(n.right, n);
-            }
-        }
-    }
-
-    private RectHV makeRect(TreeNode parent, TreeNode p) {
+    private RectHV makeRect(TreeNode parent, Point2D p) {
         RectHV rect;
         if (parent == null) {
             rect = new RectHV(0, 0, 1, 1);
         } else {
             if (parent.isVerticle) {
-                if (parent.left == p) {
-                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.point.x(), parent.rect.ymax());
+                if (parent.left != null && parent.left.point.equals(p)) {
+                    double xmax = Math.max(parent.point.x(), parent.rect.xmax());
+                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), xmax, parent.rect.ymax());
                 } else {
-                    rect = new RectHV(parent.point.x(), parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
+                    double xmin = Math.min(parent.point.x(), parent.rect.xmin());
+                    rect = new RectHV(xmin, parent.rect.ymin(), parent.rect.xmax(), parent.rect.ymax());
                 }
             } else {
-                if (parent.left == p) {
-                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.rect.xmax(), parent.point.y());
+                if (parent.left != null && parent.left.point.equals(p)) {
+                    double ymax = Math.max(parent.point.y(), parent.rect.ymax());
+                    rect = new RectHV(parent.rect.xmin(), parent.rect.ymin(), parent.rect.xmax(), ymax);
                 } else {
-                    rect = new RectHV(parent.rect.xmin(), parent.point.y(), parent.rect.xmax(), parent.rect.ymax());
+                    double ymin = Math.min(parent.point.y(), parent.rect.ymin());
+                    rect = new RectHV(parent.rect.xmin(), ymin, parent.rect.xmax(), parent.rect.ymax());
                 }
             }
         }
@@ -149,9 +119,6 @@ public class KdTree {
 
     private boolean get(TreeNode n, Point2D p) {
         if (n == null) {
-            return false;
-        }
-        if (p == null) {
             return false;
         }
         if (n.point.equals(p)) {
@@ -235,27 +202,4 @@ public class KdTree {
         }
         return closest;
     }
-
-//    public static void main(String[] args) {
-//        KdTree tree = new KdTree();
-//        In in = new In(args[0]);
-//
-//        while (!in.isEmpty()) {
-//            double x = in.readDouble();
-//            double y = in.readDouble();
-//            Point2D p = new Point2D(x, y);
-//            tree.insert(p);
-//        }
-//
-//        Point2D target = new Point2D(0.2, 0.5);
-//        boolean t = tree.contains(target);
-//
-//        if (t) {
-//            StdOut.println("find target");
-//        } else {
-//            StdOut.print("contain works wrong");
-//        }
-//
-//    }
-
 }
