@@ -73,13 +73,14 @@ public class PercolationVisualizer {
         draw(perc, n);
         StdDraw.show();
         StdDraw.pause(DELAY);
-        while (!in.isEmpty()) {
-            int i = in.readInt();
-            int j = in.readInt();
-            perc.open(i, j);
-            draw(perc, n);
-            StdDraw.show();
-            StdDraw.pause(DELAY);
-        }
+        StdOut.println(perc.percolates());
+//        while (!in.isEmpty()) {
+//            int i = in.readInt();
+//            int j = in.readInt();
+//            perc.open(i, j);
+//            draw(perc, n);
+//            StdDraw.show();
+//            StdDraw.pause(DELAY);
+//        }
     }
 }
