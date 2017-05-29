@@ -145,19 +145,25 @@ public class KdTree {
     private void range(TreeNode current, RectHV rect, SET<Point2D> set) {
         if (current == null) {
             return;
-        }
-        if (current.rect.intersects(rect)) {
+        } else {
             if (rect.contains(current.point)) {
                 set.add(current.point);
             }
+
+            if (current.left != null && rect.intersects(current.left.rect)) {
+                range(current.left, rect, set);
+            }
+            if (current.right != null && rect.intersects(current.right.rect)) {
+                range(current.right, rect, set);
+            }
         }
-        range(current.left, rect, set);
-        range(current.right, rect, set);
     }
 
     public Point2D nearest(Point2D p) {
         if (p == null) {
             throw new NullPointerException("Argument p for nearest is null");
+        } else if (isEmpty()) {
+            return null;
         }
         return nearest(root, p, root.point);
     }
@@ -170,23 +176,14 @@ public class KdTree {
         if (Double.compare(dist, closest.distanceSquaredTo(target)) < 0) {
             closest = current.point;
         }
-        TreeNode close = null;
-        TreeNode far = null;
+        TreeNode close, far;
         if ((current.isVerticle && (Double.compare(target.x(), current.point.x()) < 0))
                 || (!current.isVerticle && (Double.compare(target.y(), current.point.y()) < 0))) {
-            if (current.left != null) {
-                close = current.left;
-            }
-            if (current.right != null) {
-                far = current.right;
-            }
+            close = current.left;
+            far = current.right;
         } else {
-            if (current.right != null) {
-                close = current.right;
-            }
-            if (current.left != null) {
-                far = current.left;
-            }
+            close = current.right;
+            far = current.left;
         }
         closest = nearest(close, target, closest);
         closest = nearest(far, target, closest);
@@ -211,7 +208,6 @@ public class KdTree {
             StdDraw.setPenColor(StdDraw.BLUE);
             StdDraw.line(current.rect.xmin(), current.point.y(), current.rect.xmax(), current.point.y());
         }
-
         draw(current.left);
         draw(current.right);
     }
