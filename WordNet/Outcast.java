@@ -1,11 +1,20 @@
+import java.lang.*;
+
+
 public class Outcast {
     // constructor takes a WordNet object
     public Outcast(WordNet wordnet) {
+        if (wordnet == null) {
+            throw new IllegalArgumentException("Given a null object to argument wordnet");
+        }
 
     }
 
     // given an array of WordNet nouns, return an outcast
     public String outcast(String[] nouns) {
+        if (nouns == null) {
+            throw new IllegalArgumentException("Given a null object to argument nouns");
+        }
         return null;
     }
 
