@@ -1,26 +1,52 @@
+import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
-import java.lang.*;
+import java.util.HashMap;
+import edu.princeton.cs.algs4.In;
 
 
 public class SAP {
 
-    private Digraph net;
+    private final Digraph net;
+
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
         if (G == null) {
             throw new IllegalArgumentException("Given a null Digraph object");
         }
+
         net = new Digraph(G);
     }
 
     private static boolean checkInRange(int v, Digraph g) {
-        return 0 < v && v < g.V();
+        return 0 <= v && v < g.V();
     }
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         if (!checkInRange(v, net) || !checkInRange(w, net)) {
             throw new IllegalArgumentException("argument v or w is not between 0 and the size of current digraph");
         }
+        BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(net, v);
+        BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(net, w);
+
+        int shortest = Integer.MAX_VALUE;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < net.V(); i++) {
+            if (bfsV.hasPathTo(i)) {
+                map.put(i, bfsV.distTo(i));
+            }
+        }
+        for (int i = 0; i < net.V(); i++) {
+            if (map.containsKey(i) && bfsW.hasPathTo(i)) {
+                int current = map.get(i).intValue() + bfsW.distTo(i);
+                if (current < shortest) {
+                    shortest = current;
+                }
+            }
+        }
+        if (Integer.compare(shortest, Integer.MAX_VALUE) == -1) {
+            return shortest;
+        }
+        return -1;
     }
 
     // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
@@ -29,7 +55,27 @@ public class SAP {
             throw new IllegalArgumentException("argument v or w is not between 0 and the size of current digraph");
         }
 
-        return 0;
+        BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(net, v);
+        BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(net, w);
+
+        int shortest = Integer.MAX_VALUE;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < net.V(); i++) {
+            if (bfsV.hasPathTo(i)) {
+                map.put(i, bfsV.distTo(i));
+            }
+        }
+        int res = -1;
+        for (int i = 0; i < net.V(); i++) {
+            if (map.containsKey(i) && bfsW.hasPathTo(i)) {
+                int current = map.get(i) + bfsW.distTo(i);
+                if (current < shortest) {
+                    shortest = current;
+                    res = i;
+                }
+            }
+        }
+        return res;
     }
 
     // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
@@ -40,7 +86,28 @@ public class SAP {
         if (w == null) {
             throw new IllegalArgumentException("Given a null Iterable object to argument w");
         }
-        return 0;
+        BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(net, v);
+        BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(net, w);
+
+        int shortest = Integer.MAX_VALUE;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < net.V(); i++) {
+            if (bfsV.hasPathTo(i)) {
+                map.put(i, bfsV.distTo(i));
+            }
+        }
+        for (int i = 0; i < net.V(); i++) {
+            if (map.containsKey(i) && bfsW.hasPathTo(i)) {
+                int current = map.get(i) + bfsW.distTo(i);
+                if (current < shortest) {
+                    shortest = current;
+                }
+            }
+        }
+        if (Integer.compare(shortest, Integer.MAX_VALUE) == -1) {
+            return shortest;
+        }
+        return -1;
     }
 
     // a common ancestor that participates in shortest ancestral path; -1 if no such path
@@ -52,19 +119,26 @@ public class SAP {
             throw new IllegalArgumentException("Given a null Iterable object to argument w");
         }
 
-        return 0;
-    }
+        BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(net, v);
+        BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(net, w);
 
-    public static void main(String[] args) {
-        In in = new In(args[0]);
-        Digraph G = new Digraph(in);
-        SAP sap = new SAP(G);
-        while (!StdIn.isEmpty()) {
-            int v = StdIn.readInt();
-            int w = StdIn.readInt();
-            int length   = sap.length(v, w);
-            int ancestor = sap.ancestor(v, w);
-            StdOut.printf("length = %d, ancestor = %d\n", length, ancestor);
+        int shortest = Integer.MAX_VALUE;
+        HashMap<Integer, Integer> map = new HashMap<>();
+        for (int i = 0; i < net.V(); i++) {
+            if (bfsV.hasPathTo(i)) {
+                map.put(i, bfsV.distTo(i));
+            }
         }
+        int res = -1;
+        for (int i = 0; i < net.V(); i++) {
+            if (map.containsKey(i) && bfsW.hasPathTo(i)) {
+                int current = map.get(i) + bfsW.distTo(i);
+                if (current < shortest) {
+                    shortest = current;
+                    res = i;
+                }
+            }
+        }
+        return res;
     }
 }
