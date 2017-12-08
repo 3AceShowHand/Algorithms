@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 import edu.princeton.cs.algs4.Digraph;
 import java.util.HashMap;
-import edu.princeton.cs.algs4.In;
 
 
 public class SAP {
@@ -20,13 +19,16 @@ public class SAP {
     private static boolean checkInRange(int v, Digraph g) {
         return 0 <= v && v < g.V();
     }
+
     // length of shortest ancestral path between v and w; -1 if no such path
     public int length(int v, int w) {
         if (!checkInRange(v, net) || !checkInRange(w, net)) {
             throw new IllegalArgumentException("argument v or w is not between 0 and the size of current digraph");
         }
+
         BreadthFirstDirectedPaths bfsV = new BreadthFirstDirectedPaths(net, v);
         BreadthFirstDirectedPaths bfsW = new BreadthFirstDirectedPaths(net, w);
+
 
         int shortest = Integer.MAX_VALUE;
         HashMap<Integer, Integer> map = new HashMap<>();
@@ -141,4 +143,17 @@ public class SAP {
         }
         return res;
     }
+
+//    public static void main(String[] args) {
+//        int v = 0;
+//        int w = 1;
+//
+//        In in1 = new In(args[0]);
+//        In in2 = new In(args[1]);
+//
+//        SAP sap1 = new SAP(new Digraph(in1));
+//        SAP sap2 = new SAP(new Digraph(in2));
+//
+//        StdOut.println(sap1.length(v, w));
+//    }
 }
