@@ -9,7 +9,6 @@ import java.util.HashMap;
 
 public class WordNet {
 
-    private final Digraph graph;
     private final HashMap<String, ArrayList<Integer>> value2key;
     private final HashMap<Integer, String> map;
     private final SAP sap;
@@ -41,7 +40,8 @@ public class WordNet {
             }
         }
 
-        graph = new Digraph(map.size());
+        Digraph graph = new Digraph(map.size());
+
         while (hyperCont.hasNextLine()) {
             int[] content = parseIntArray(hyperCont.readLine().split(","));
             int id = content[0];
@@ -83,6 +83,9 @@ public class WordNet {
     }
 
     public boolean isNoun(String word) {
+        if (word == null) {
+            throw new IllegalArgumentException("Given a null object to check");
+        }
         return value2key.keySet().contains(word);
     }
 
@@ -110,15 +113,5 @@ public class WordNet {
         int id = sap.ancestor(idA, idB);
 
         return id == -1 ? null : map.get(id);
-    }
-
-    public static void main(String[] args) {
-        WordNet net = new WordNet("synsets100-subgraph.txt", "hypernyms100-subgraph.txt");
-        String nounA = "thing";
-        String nounB = "streptokinase";
-        int distance = net.distance(nounA, nounB);
-        String sap = net.sap(nounA, nounB);
-        StdOut.println(distance);
-        StdOut.println(sap);
     }
 }
