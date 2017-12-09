@@ -1,44 +1,73 @@
 import edu.princeton.cs.algs4.Digraph;
-import edu.princeton.cs.algs4.Topological;
+import edu.princeton.cs.algs4.DirectedCycle;
 import edu.princeton.cs.algs4.In;
+import edu.princeton.cs.algs4.SET;
+import edu.princeton.cs.algs4.DirectedDFS;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 
 public class WordNet {
 
     private final Digraph graph;
+    private final HashMap<String, ArrayList<Integer>> value2key;
     private final HashMap<Integer, String> map;
+    private final SAP sap;
 
-    // constructor takes the name of the two input files
     public WordNet(String synsets, String hypernyms) {
         if (synsets == null || hypernyms == null) {
             throw new IllegalArgumentException("Argument shouldn't be null, please enter synsets and hypernyms");
         }
-        In synContent = new In(synsets);
-        map = new HashMap<>();
-        while (synContent.hasNextLine()) {
-            String[] current = synContent.readLine().split(",");
-            int id = Integer.parseInt(current[0]);
-            String value = current[1];
-            map.put(id, value);
-        }
-        graph = new Digraph(map.size());
 
-        In hyperContent = new In(hypernyms);
-        while (hyperContent.hasNextLine()) {
-            String currLine = hyperContent.readLine();
-            int[] content = parseIntArray(currLine.split(","));
-            int id = content[0];
-            for (int i = 1; i < content.length; i++) {
-                graph.addEdge(id, content[i]);
+        In synCont = new In(synsets);
+        In hyperCont = new In(hypernyms);
+
+        value2key = new HashMap<>();
+        map = new HashMap<>();
+
+        while (synCont.hasNextLine()) {
+            String[] current = synCont.readLine().split(",");
+            int id = Integer.parseInt(current[0]);
+            String synNouns = current[1];
+            map.put(id, synNouns);
+            for (String s: synNouns.split(" ")) {
+                if (value2key.containsKey(s)) {
+                    value2key.get(s).add(id);
+                } else {
+                    ArrayList<Integer> t = new ArrayList<>();
+                    t.add(id);
+                    value2key.put(s, t);
+                }
             }
         }
-        // Check whether is a DAG.
-        Topological topOrder = new Topological(graph);
-        if (!topOrder.hasOrder()) {
-            throw new IllegalArgumentException("Construted WordNet is not a DAG");
+
+        graph = new Digraph(map.size());
+        while (hyperCont.hasNextLine()) {
+            int[] content = parseIntArray(hyperCont.readLine().split(","));
+            int id = content[0];
+            for (int i = 1; i < content.length; i++) {
+                int dest = content[i];
+                graph.addEdge(id, dest);
+            }
         }
+        DirectedCycle chcker = new DirectedCycle(graph);
+        if (chcker.hasCycle()) {
+            throw new IllegalArgumentException("This is not a rooted DAG");
+        }
+
+        SET<Integer> roots = new SET<Integer>();
+        for (int i = 0; i < graph.V(); i++) {
+            DirectedDFS dfs = new DirectedDFS(graph, i);
+            if (dfs.count() == 1) {
+                roots.add(i);
+            }
+        }
+        if (roots.size() > 1) {
+            throw new IllegalArgumentException("Has more than one root.");
+        }
+
+        sap = new SAP(graph);
+
     }
 
     private static int[] parseIntArray(String[] arr) {
@@ -49,65 +78,47 @@ public class WordNet {
         return res;
     }
 
-    // returns all WordNet nouns
     public Iterable<String> nouns() {
-           return map.values();
-    }
-    
-    // is the word a WordNet noun?
-    public boolean isNoun(String word) {
-           return map.containsValue(word);
+        return value2key.keySet();
     }
 
-    // distance is the minimum length of any ancestral path between any synset v of A and any synset w of B.
+    public boolean isNoun(String word) {
+        return value2key.keySet().contains(word);
+    }
+
     public int distance(String nounA, String nounB) {
-        if (!isNoun(nounA) && !isNoun(nounB)) {
+        if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException("nounA or nounB is not a real noun.");
         }
-        Integer idA = null;
-        Integer idB = null;
-        for (Map.Entry<Integer, String> e : map.entrySet()) {
-            Integer key = e.getKey();
-            String value = e.getValue();
-            if (value.equals(nounA)) {
-                idA = key;
-            } else if (value.equals(nounB)) {
-                idB = key;
-            }
-            if (idA != null && idB != null) {
-                break;
-            }
-        }
-        SAP sap = new SAP(this.graph);
+
+        Iterable<Integer> idA = value2key.get(nounA);
+        Iterable<Integer> idB = value2key.get(nounB);
+
         int distance = sap.length(idA, idB);
 
         return distance;
     }
-    
-    // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
-    // in a shortest ancestral path (defined below)
+
     public String sap(String nounA, String nounB) {
-        if (!isNoun(nounA) && !isNoun(nounB)) {
+        if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException("nounA or nounB is not a real noun.");
         }
-        Integer idA = null;
-        Integer idB = null;
-        for (Map.Entry<Integer, String> e : map.entrySet()) {
-            Integer key = e.getKey();
-            String value = e.getValue();
-            if (value.equals(nounA)) {
-                idA = key;
-            } else if (value.equals(nounB)) {
-                idB = key;
-            }
-            if (idA != null && idB != null) {
-                break;
-            }
-        }
 
-        SAP sap = new SAP(this.graph);
+        Iterable<Integer> idA = value2key.get(nounA);
+        Iterable<Integer> idB = value2key.get(nounB);
+
         int id = sap.ancestor(idA, idB);
 
-        return map.get(id);
+        return id == -1 ? null : map.get(id);
+    }
+
+    public static void main(String[] args) {
+        WordNet net = new WordNet("synsets100-subgraph.txt", "hypernyms100-subgraph.txt");
+        String nounA = "thing";
+        String nounB = "streptokinase";
+        int distance = net.distance(nounA, nounB);
+        String sap = net.sap(nounA, nounB);
+        StdOut.println(distance);
+        StdOut.println(sap);
     }
 }

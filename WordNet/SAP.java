@@ -147,13 +147,10 @@ public class SAP {
 //    public static void main(String[] args) {
 //        int v = 0;
 //        int w = 1;
-//
 //        In in1 = new In(args[0]);
 //        In in2 = new In(args[1]);
-//
 //        SAP sap1 = new SAP(new Digraph(in1));
 //        SAP sap2 = new SAP(new Digraph(in2));
-//
 //        StdOut.println(sap1.length(v, w));
 //    }
 }
