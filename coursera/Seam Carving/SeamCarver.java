@@ -2,7 +2,7 @@ import edu.princeton.cs.algs4.Picture;
 
 public class SeamCarver {
 
-    private Picture pic;
+    private final Picture pic;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
@@ -51,16 +51,45 @@ public class SeamCarver {
 
     // remove horizontal seam from current picture
     public void removeHorizontalSeam(int[] seam) {
+        if (pic.height() <= 1) {
+            throw new IllegalArgumentException("The height of given picture is less than or equal to 1");
+        }
         if (seam == null) {
             throw new IllegalArgumentException("Given a null seam object");
+        }
+        if (seam.length != pic.height()) {
+            throw new IllegalArgumentException("The length of the seam not math the height of the given picture");
+        }
+        for (int i = 0; i < seam.length; i++) {
+            if (seam[i] < 0 || seam[i] >= width()) {
+                throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
+            }
+            if (Math.abs(seam[i] - seam[i+1]) > 1) {
+                throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+            }
         }
     }
 
     // remove vertical seam from current picture
     public void removeVerticalSeam(int[] seam) {
+        if (pic.width() <= 1) {
+            throw new IllegalArgumentException("The width of given picture is less than or equal to 1");
+        }
         if (seam == null) {
             throw new IllegalArgumentException("Given a null seam object");
         }
+        if (seam.length != pic.width()) {
+            throw new IllegalArgumentException("The height of the seam not match the width of the given picture");
+        }
+        for (int i = 0; i < seam.length; i++) {
+            if (seam[i] < 0 || seam[i] >= height()) {
+                throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
+            }
+            if (Math.abs(seam[i] - seam[i+1]) > 1) {
+                throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+            }
+        }
+
     }
 
 }
