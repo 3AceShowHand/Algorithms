@@ -1,5 +1,6 @@
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.Stopwatch;
 
 import java.awt.Color;
 
@@ -66,16 +67,14 @@ public class SeamCarver {
         }
     }
 
-//    private boolean checkRange(int x, int y, double[][] dist) {
-//        int height = dist.length;
-//        int width = dist[0].length;
-//
-//        return x >= 0 && x < pic.width() && y >= 0 && y < pic.height();
-//    }
+    private boolean checkRange(int x, double[][] dist) {
+        int width = dist[0].length;
+
+        return x >= 0 && x < width;
+    }
 
     private double[][] buildDistribution() {
         double[][] distribution = new double[height()][width()];
-
         for (int row = 0; row < distribution.length; row++) {
             for (int col = 0; col < distribution[0].length; col++) {
                 distribution[row][col] = energy(col, row);
@@ -87,29 +86,35 @@ public class SeamCarver {
     private double[][] rotateDistribution(double[][] distribution) {
         int width = distribution[0].length;
         int height = distribution.length;
-        double[][] res = new double[width][height];
 
+        double[][] res = new double[width][height];
         for (int row = 0; row < width; row++) {
             for (int col = 0; col < height; col++) {
                 res[row][col] = energy(row, col);
             }
         }
-
         return res;
     }
 
-    private int argminX(int[] xs, int y, double[][] dist) {
-        return 0;
-    }
-
     private double singleFindSeam(int x, int y, double[][] dist, int[] idx) {
-        idx[0] = y;
         double res = dist[x][y];
         idx[0] = x;
-        while (y < dist.length) {
-            int nextY = y + 1;
+        for (int row = 1; row < dist.length; row++){
             int[] nextXs = new int[]{x-1, x, x+1};
+            double min = 1000;
+            int nextX = 0;
 
+            for (int col: nextXs) {
+                if (checkRange(col, dist)) {
+                    if (dist[row][col] < min) {
+                        min = dist[row][col];
+                        nextX = col;
+                    }
+                }
+            }
+            res += min;
+            idx[row] = nextX;
+            x = nextX;
         }
         return res;
     }
@@ -187,22 +192,15 @@ public class SeamCarver {
         }
         StdOut.println();
 
-        double[][] distribution = sc.buildDistribution();
+        double[][] dist = sc.buildDistribution();
+        int[] idx = new int[dist.length];
 
-        for (int row = 0; row < distribution.length; row++) {
-            for (int col = 0; col < distribution[0].length; col++) {
-                StdOut.printf("%9.0f ", distribution[row][col]);
-            }
-            StdOut.println();
-        }
-        StdOut.println();
+        double res = sc.singleFindSeam(0, 0, dist, idx);
 
-        double[][] rotated = sc.rotateDistribution(distribution);
-        for (int row = 0; row < rotated.length; row++) {
-            for (int col = 0; col < rotated[0].length; col++) {
-                StdOut.printf("%9.0f ", rotated[row][col]);
-            }
-            StdOut.println();
+        StdOut.println(res);
+        for (int item : idx) {
+            StdOut.printf("%d ", item);
         }
+
     }
 }
