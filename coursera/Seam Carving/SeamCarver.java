@@ -1,4 +1,8 @@
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.StdOut;
+
+import java.awt.Color;
+
 
 public class SeamCarver {
 
@@ -27,6 +31,10 @@ public class SeamCarver {
         return pic.height();
     }
 
+    private boolean onBoard(int x, int y) {
+        return (x == 0 || x == pic.width() - 1 || y == 0 || y == pic.height() - 1);
+    }
+
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
         if (x < 0 || x >= width()) {
@@ -36,7 +44,82 @@ public class SeamCarver {
             throw new IllegalArgumentException("Given y is not in range");
         }
 
-        return 0.0;
+        if (onBoard(x, y)) {
+            return 1000;
+        } else {
+            Color left = pic.get(x - 1, y);
+            Color right = pic.get(x + 1, y);
+            Color upper = pic.get(x, y - 1);
+            Color down = pic.get(x, y + 1);
+
+            int rx = right.getRed() - left.getRed();
+            int gx = right.getGreen() - left.getGreen();
+            int bx = right.getBlue() - left.getBlue();
+            int dx = rx * rx + gx * gx + bx * bx;
+
+            int ry = upper.getRed() - down.getRed();
+            int gy = upper.getGreen() - down.getGreen();
+            int by = upper.getBlue() - down.getBlue();
+            int dy = ry * ry + gy * gy + by * by;
+
+            return Math.sqrt(dx + dy);
+        }
+    }
+
+//    private boolean checkRange(int x, int y, double[][] dist) {
+//        int height = dist.length;
+//        int width = dist[0].length;
+//
+//        return x >= 0 && x < pic.width() && y >= 0 && y < pic.height();
+//    }
+
+    private double[][] buildDistribution() {
+        double[][] distribution = new double[height()][width()];
+
+        for (int row = 0; row < distribution.length; row++) {
+            for (int col = 0; col < distribution[0].length; col++) {
+                distribution[row][col] = energy(col, row);
+            }
+        }
+        return distribution;
+    }
+
+    private double[][] rotateDistribution(double[][] distribution) {
+        int width = distribution[0].length;
+        int height = distribution.length;
+        double[][] res = new double[width][height];
+
+        for (int row = 0; row < width; row++) {
+            for (int col = 0; col < height; col++) {
+                res[row][col] = energy(row, col);
+            }
+        }
+
+        return res;
+    }
+
+    private int argminX(int[] xs, int y, double[][] dist) {
+        return 0;
+    }
+
+    private double singleFindSeam(int x, int y, double[][] dist, int[] idx) {
+        idx[0] = y;
+        double res = dist[x][y];
+        idx[0] = x;
+        while (y < dist.length) {
+            int nextY = y + 1;
+            int[] nextXs = new int[]{x-1, x, x+1};
+
+        }
+        return res;
+    }
+
+    // sequence of indices for vertical seam
+    public int[] findVerticalSeam() {
+        double[][] distribution = buildDistribution();
+        int[] res = new int[distribution[0].length];
+
+        return null;
     }
 
     // sequence of indices for horizontal seam
@@ -44,10 +127,7 @@ public class SeamCarver {
         return null;
     }
 
-    // sequence of indices for vertical seam
-    public int[] findVerticalSeam() {
-        return null;
-    }
+
 
     // remove horizontal seam from current picture
     public void removeHorizontalSeam(int[] seam) {
@@ -89,7 +169,40 @@ public class SeamCarver {
                 throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
             }
         }
-
     }
 
+    public static void main(String[] args) {
+        Picture picture = new Picture(args[0]);
+        StdOut.printf("image is %d pixels wide by %d pixels high.\n", picture.width(), picture.height());
+
+        SeamCarver sc = new SeamCarver(picture);
+
+        StdOut.printf("Printing energy calculated for each pixel.\n");
+
+        for (int row = 0; row < sc.height(); row++) {
+            for (int col = 0; col < sc.width(); col++) {
+                StdOut.printf("%9.0f ", sc.energy(col, row));
+            }
+            StdOut.println();
+        }
+        StdOut.println();
+
+        double[][] distribution = sc.buildDistribution();
+
+        for (int row = 0; row < distribution.length; row++) {
+            for (int col = 0; col < distribution[0].length; col++) {
+                StdOut.printf("%9.0f ", distribution[row][col]);
+            }
+            StdOut.println();
+        }
+        StdOut.println();
+
+        double[][] rotated = sc.rotateDistribution(distribution);
+        for (int row = 0; row < rotated.length; row++) {
+            for (int col = 0; col < rotated[0].length; col++) {
+                StdOut.printf("%9.0f ", rotated[row][col]);
+            }
+            StdOut.println();
+        }
+    }
 }
