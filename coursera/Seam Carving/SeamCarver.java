@@ -1,20 +1,29 @@
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.StdOut;
-
 import java.util.Arrays;
 import java.awt.Color;
 
 
 public class SeamCarver {
 
-    private final Picture pic;
+    private Picture pic;
+    private final double[][] distribution;
+    private Picture rotatedPic;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         if (picture == null) {
             throw new IllegalArgumentException("Given a null picture object");
         }
-        this.pic = picture;
+        pic = new Picture(picture);
+        distribution = buildDistribution();
+
+        rotatedPic = new Picture(pic.height(), pic.width());
+        for (int row = 0; row < pic.height(); row++) {
+            for (int col = 0; col < pic.width(); col++) {
+                Color current = pic.get(col, row);
+                rotatedPic.set(row, col, current);
+            }
+        }
     }
 
     //current picture
@@ -83,7 +92,7 @@ public class SeamCarver {
         return distribution;
     }
 
-    private double[][] rotateDistribution(double[][] distribution) {
+    private double[][] rotateDistribution() {
         int width = distribution[0].length;
         int height = distribution.length;
 
@@ -102,7 +111,7 @@ public class SeamCarver {
         for (int row = 1; row < dist.length; row++){
             int[] nextXs = new int[]{x-1, x, x+1};
             double min = 1000;
-            int nextX = 0;
+            int nextX = x - 1;
 
             for (int col: nextXs) {
                 if (checkRange(col, dist)) {
@@ -119,10 +128,7 @@ public class SeamCarver {
         return res;
     }
 
-    // sequence of indices for vertical seam
-    public int[] findVerticalSeam() {
-        double[][] distribution = buildDistribution();
-
+    private int[] findVerticalSeamAux(double[][] distribution) {
         int[] swap = new int[distribution.length];
         double minTotal = singleFindSeam(0, distribution, swap);
         int[] res = Arrays.copyOf(swap, swap.length);
@@ -133,36 +139,38 @@ public class SeamCarver {
                 res = Arrays.copyOf(swap, swap.length);
             }
         }
-
         return res;
+    }
+
+    // sequence of indices for vertical seam
+    public int[] findVerticalSeam() {
+        return findVerticalSeamAux(distribution);
     }
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        return null;
+        double[][] rotated = rotateDistribution();
+        return findVerticalSeamAux(rotated);
     }
 
-
-
-    // remove horizontal seam from current picture
-    public void removeHorizontalSeam(int[] seam) {
-        if (pic.height() <= 1) {
-            throw new IllegalArgumentException("The height of given picture is less than or equal to 1");
-        }
-        if (seam == null) {
-            throw new IllegalArgumentException("Given a null seam object");
-        }
-        if (seam.length != pic.height()) {
-            throw new IllegalArgumentException("The length of the seam not math the height of the given picture");
-        }
-        for (int i = 0; i < seam.length; i++) {
-            if (seam[i] < 0 || seam[i] >= width()) {
-                throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
+    private void shiftSingleLine(int row, int col) {
+        Color next = null;
+        for (int i = col; col < width(); col++) {
+            if (col == width()-1) {
+                next = Color.white;
+            } else {
+                next = pic.get(col+1, row);
             }
-            if (Math.abs(seam[i] - seam[i+1]) > 1) {
-                throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
-            }
+            pic.set(col, row, next);
         }
+    }
+
+    private void shiftPicture(int[] seam) {
+        for (int row = 0; row < seam.length; row++) {
+            int col = seam[row];
+            shiftSingleLine(row, col);
+        }
+
     }
 
     // remove vertical seam from current picture
@@ -173,8 +181,30 @@ public class SeamCarver {
         if (seam == null) {
             throw new IllegalArgumentException("Given a null seam object");
         }
-        if (seam.length != pic.width()) {
+        if (seam.length != pic.height()) {
             throw new IllegalArgumentException("The height of the seam not match the width of the given picture");
+        }
+        for (int i = 0; i < seam.length; i++) {
+            if (seam[i] < 0 || seam[i] >= width()) {
+                throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
+            }
+            if (Math.abs(seam[i] - seam[i+1]) > 1) {
+                throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+            }
+        }
+        shiftPicture(seam);
+    }
+
+    // remove horizontal seam from current picture
+    public void removeHorizontalSeam(int[] seam) {
+        if (pic.height() <= 1) {
+            throw new IllegalArgumentException("The height of given picture is less than or equal to 1");
+        }
+        if (seam == null) {
+            throw new IllegalArgumentException("Given a null seam object");
+        }
+        if (seam.length != width()) {
+            throw new IllegalArgumentException("The length of the seam not math the height of the given picture");
         }
         for (int i = 0; i < seam.length; i++) {
             if (seam[i] < 0 || seam[i] >= height()) {
@@ -187,37 +217,9 @@ public class SeamCarver {
     }
 
     public static void main(String[] args) {
-        Picture picture = new Picture(args[0]);
-        StdOut.printf("image is %d pixels wide by %d pixels high.\n", picture.width(), picture.height());
-
-        SeamCarver sc = new SeamCarver(picture);
-
-        StdOut.printf("Printing energy calculated for each pixel.\n");
-
-        for (int row = 0; row < sc.height(); row++) {
-            for (int col = 0; col < sc.width(); col++) {
-                StdOut.printf("%9.0f ", sc.energy(col, row));
-            }
-            StdOut.println();
-        }
-        StdOut.println();
-
-        double[][] dist = sc.buildDistribution();
-        for (int row = 0; row < dist.length; row++) {
-            for (int col = 0; col < dist[0].length; col++) {
-                StdOut.printf("%9.0f ", dist[row][col]);
-            }
-            StdOut.println();
-        }
-        StdOut.println();
-
-        double[][] rotated = sc.rotateDistribution(dist);
-        for (int row = 0; row < rotated.length; row++) {
-            for (int col = 0; col < rotated[0].length; col++) {
-                StdOut.printf("%9.0f ", rotated[row][col]);
-            }
-            StdOut.println();
-        }
-
+        Picture pic = new Picture(args[0]);
+        SeamCarver sc = new SeamCarver(pic);
+        sc.picture().show();
+        sc.rotatedPic.show();
     }
 }
