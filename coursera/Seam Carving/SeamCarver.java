@@ -1,7 +1,7 @@
 import edu.princeton.cs.algs4.Picture;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.Stopwatch;
 
+import java.util.Arrays;
 import java.awt.Color;
 
 
@@ -96,8 +96,8 @@ public class SeamCarver {
         return res;
     }
 
-    private double singleFindSeam(int x, int y, double[][] dist, int[] idx) {
-        double res = dist[x][y];
+    private double singleFindSeam(int x, double[][] dist, int[] idx) {
+        double res = dist[0][x];
         idx[0] = x;
         for (int row = 1; row < dist.length; row++){
             int[] nextXs = new int[]{x-1, x, x+1};
@@ -122,9 +122,19 @@ public class SeamCarver {
     // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
         double[][] distribution = buildDistribution();
-        int[] res = new int[distribution[0].length];
 
-        return null;
+        int[] swap = new int[distribution.length];
+        double minTotal = singleFindSeam(0, distribution, swap);
+        int[] res = Arrays.copyOf(swap, swap.length);
+        for (int col = 1; col < distribution[0].length; col++) {
+            double totalEnergy = singleFindSeam(col, distribution, swap);
+            if (totalEnergy < minTotal) {
+                minTotal = totalEnergy;
+                res = Arrays.copyOf(swap, swap.length);
+            }
+        }
+
+        return res;
     }
 
     // sequence of indices for horizontal seam
@@ -193,13 +203,20 @@ public class SeamCarver {
         StdOut.println();
 
         double[][] dist = sc.buildDistribution();
-        int[] idx = new int[dist.length];
+        for (int row = 0; row < dist.length; row++) {
+            for (int col = 0; col < dist[0].length; col++) {
+                StdOut.printf("%9.0f ", dist[row][col]);
+            }
+            StdOut.println();
+        }
+        StdOut.println();
 
-        double res = sc.singleFindSeam(0, 0, dist, idx);
-
-        StdOut.println(res);
-        for (int item : idx) {
-            StdOut.printf("%d ", item);
+        double[][] rotated = sc.rotateDistribution(dist);
+        for (int row = 0; row < rotated.length; row++) {
+            for (int col = 0; col < rotated[0].length; col++) {
+                StdOut.printf("%9.0f ", rotated[row][col]);
+            }
+            StdOut.println();
         }
 
     }
