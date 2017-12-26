@@ -1,6 +1,5 @@
-import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.Picture;
-import edu.princeton.cs.algs4.StdOut;
+
 
 import java.util.Arrays;
 import java.awt.Color;
@@ -22,28 +21,28 @@ public class SeamCarver {
         pic = new Picture(picture);
     }
 
-    private Picture transpose(Picture pic) {
-        Picture res = new Picture(pic.height(), pic.width());
+    private Picture transpose(Picture p) {
+        Picture res = new Picture(p.height(), p.width());
         for (int col = 0; col < res.width(); col++) {
             for (int row = 0; row < res.height(); row++) {
-                Color current = pic.get(row, col);
+                Color current = p.get(row, col);
                 res.set(col, row, current);
             }
         }
         return res;
     }
 
-    private double[][] buildDistribution(Picture pic) {
-        double[][] res = new double[pic.height()][pic.width()];
+    private double[][] buildDistribution(Picture p) {
+        double[][] res = new double[p.height()][p.width()];
         for (int row = 0; row < res.length; row++) {
             for (int col = 0; col < res[0].length; col++) {
-                res[row][col] = energy(col, row);
+                res[row][col] = energy(col, row, p);
             }
         }
         return res;
     }
 
-    //current picture
+    // current picture
     public Picture picture() {
         return pic;
     }
@@ -58,26 +57,25 @@ public class SeamCarver {
         return pic.height();
     }
 
-    private boolean onBoard(int x, int y) {
-        return (x == 0 || x == pic.width() - 1 || y == 0 || y == pic.height() - 1);
+    private boolean onBoard(int x, int y, Picture p) {
+        return (x == 0 || x == p.width() - 1 || y == 0 || y == p.height() - 1);
     }
 
-    // energy of pixel at column x and row y
-    public double energy(int x, int y) {
-        if (x < 0 || x >= width()) {
+    private double energy(int x, int y, Picture p) {
+        if (x < 0 || x >= p.width()) {
             throw new IllegalArgumentException("Given x is not in range");
         }
-        if (y < 0 || y >= height()) {
+        if (y < 0 || y >= p.height()) {
             throw new IllegalArgumentException("Given y is not in range");
         }
 
-        if (onBoard(x, y)) {
+        if (onBoard(x, y, p)) {
             return 1000;
         } else {
-            Color left = pic.get(x - 1, y);
-            Color right = pic.get(x + 1, y);
-            Color upper = pic.get(x, y - 1);
-            Color down = pic.get(x, y + 1);
+            Color left = p.get(x - 1, y);
+            Color right = p.get(x + 1, y);
+            Color upper = p.get(x, y - 1);
+            Color down = p.get(x, y + 1);
 
             int rx = right.getRed() - left.getRed();
             int gx = right.getGreen() - left.getGreen();
@@ -91,6 +89,11 @@ public class SeamCarver {
 
             return Math.sqrt(dx + dy);
         }
+    }
+
+    // energy of pixel at column x and row y
+    public double energy(int x, int y) {
+        return energy(x, y, pic);
     }
 
     private boolean checkRange(int x, double[][] dist) {
@@ -194,7 +197,8 @@ public class SeamCarver {
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        double[][] rotated = buildDistribution(transpose(pic));
+        Picture transposed = transpose(pic);
+        double[][] rotated = buildDistribution(transposed);
         return findVerticalSeamAux(rotated);
     }
 
@@ -259,21 +263,4 @@ public class SeamCarver {
 
         pic = transpose(transposed);
     }
-
-     public static void main(String[] args) {
-         Picture pic = new Picture(args[0]);
-         SeamCarver sc = new SeamCarver(pic);
-
-         double[][] energy = new double[5][];
-         energy[0] = new double[]{1000.00, 1000.00, 1000.00, 1000.00, 1000.00};
-         energy[1] = new double[]{1000.00, 289.38, 262.85, 309.55, 1000.00};
-         energy[2] = new double[]{1000.00, 228.17, 199.03, 183.06, 1000.00};
-         energy[3] = new double[]{1000.00, 145.77, 269.66, 278.22, 1000.00};
-         energy[4] = new double[]{1000.00, 1000.00, 1000.00, 1000.00, 1000.00};
-
-         int[] seam = sc.findVerticalSeamAux(energy);
-         for (int e: seam) {
-             StdOut.printf("%d ", e);
-         }
-     }
 }
