@@ -1,6 +1,4 @@
 import edu.princeton.cs.algs4.Picture;
-
-
 import java.util.Arrays;
 import java.awt.Color;
 import java.util.Stack;
@@ -13,12 +11,15 @@ public class SeamCarver {
     private int[] edgeTo;
     private double[] distTo;
 
+    private Picture transposed;
+
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         if (picture == null) {
             throw new IllegalArgumentException("Given a null picture object");
         }
         pic = new Picture(picture);
+        transposed = transpose(pic);
     }
 
     private Picture transpose(Picture p) {
@@ -197,7 +198,6 @@ public class SeamCarver {
 
     // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        Picture transposed = transpose(pic);
         double[][] rotated = buildDistribution(transposed);
         return findVerticalSeamAux(rotated);
     }
@@ -233,8 +233,10 @@ public class SeamCarver {
             if (seam[i] < 0 || seam[i] >= width()) {
                 throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
             }
-            if (Math.abs(seam[i] - seam[i+1]) > 1) {
-                throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+            if (i < (seam.length - 1)){
+                if (Math.abs(seam[i] - seam[i+1]) > 1) {
+                    throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+                }
             }
         }
         verticalShiftPicture(pic, seam);
@@ -255,12 +257,23 @@ public class SeamCarver {
             if (seam[i] < 0 || seam[i] >= height()) {
                 throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
             }
-            if (Math.abs(seam[i] - seam[i+1]) > 1) {
-                throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+            if (i < (seam.length - 1)) {
+                if (Math.abs(seam[i] - seam[i+1]) > 1) {
+                    throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+                }
             }
         }
-        Picture transposed = transpose(pic);
-
+        verticalShiftPicture(transposed, seam);
         pic = transpose(transposed);
     }
+
+    // public static void main(String[] args) {
+    //     Picture picture = new Picture(args[0]);
+    //     SeamCarver sc = new SeamCarver(picture);
+
+    //     sc.picture().show();
+
+    //     sc.removeVerticalSeam(sc.findVerticalSeam());
+    //     sc.picture().show();
+    // }
 }
