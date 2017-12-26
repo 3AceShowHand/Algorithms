@@ -1,4 +1,6 @@
 import edu.princeton.cs.algs4.Picture;
+import edu.princeton.cs.algs4.StdOut;
+
 import java.util.Arrays;
 import java.awt.Color;
 
@@ -7,7 +9,9 @@ public class SeamCarver {
 
     private Picture pic;
     private final double[][] distribution;
-    private Picture rotatedPic;
+
+    private int[] edgeTo;
+    private double[] distTo;
 
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
@@ -17,13 +21,25 @@ public class SeamCarver {
         pic = new Picture(picture);
         distribution = buildDistribution();
 
-        rotatedPic = new Picture(pic.height(), pic.width());
-        for (int row = 0; row < pic.height(); row++) {
-            for (int col = 0; col < pic.width(); col++) {
-                Color current = pic.get(col, row);
-                rotatedPic.set(row, col, current);
+        //rotatedPic = new Picture(pic.height(), pic.width());
+
+        // for (int col = 0; col < pic.width(); col++) {
+        //     for (int row = 0; row < pic.height(); row++) {
+        //         Color current = pic.get(col, row);
+        //         rotatedPic.set(rotatedPic.width() - col, rotatedPic.height() - row, current);
+        //         rotatedPic.set(pic.height() - row, pic.width() - col, current);
+        //     }
+        // }
+    }
+
+    private double[][] buildDistribution() {
+        double[][] res = new double[height()][width()];
+        for (int row = 0; row < res.length; row++) {
+            for (int col = 0; col < res[0].length; col++) {
+                res[row][col] = energy(col, row);
             }
         }
+        return res;
     }
 
     //current picture
@@ -82,14 +98,17 @@ public class SeamCarver {
         return x >= 0 && x < width;
     }
 
-    private double[][] buildDistribution() {
-        double[][] distribution = new double[height()][width()];
-        for (int row = 0; row < distribution.length; row++) {
-            for (int col = 0; col < distribution[0].length; col++) {
-                distribution[row][col] = energy(col, row);
+
+
+    private Picture transpose(Picture pic) {
+        Picture res = new Picture(pic.height(), pic.width());
+        for (int col = 0; col < res.width(); col++) {
+            for (int row = 0; row < res.height(); row++) {
+                Color current = pic.get(row, col);
+                res.set(col, row, current);
             }
         }
-        return distribution;
+        return res;
     }
 
     private double[][] rotateDistribution() {
@@ -111,7 +130,7 @@ public class SeamCarver {
         for (int row = 1; row < dist.length; row++){
             int[] nextXs = new int[]{x-1, x, x+1};
             double min = 1000;
-            int nextX = x - 1;
+            int nextX = x;
 
             for (int col: nextXs) {
                 if (checkRange(col, dist)) {
@@ -126,6 +145,48 @@ public class SeamCarver {
             x = nextX;
         }
         return res;
+    }
+
+    private int xyTo1D(int row, int col, double[][] dist) {
+        int width = dist[0].length;
+
+        return row * width + col;
+    }
+
+    private int[] get2D(int idx, double[][] dist) {
+        int width = dist[0].length;
+
+        int col = idx % width;
+        int row = (idx - col) / width;
+
+        return new int[]{row, col};
+    }
+
+    private void relax(int from, int to, double[][] distribution) {
+        int[] idx = get2D(to);
+        int row = idx[0];
+        int col = idx[1];
+        if (distTo[to] > distTo[from] + distribution[row][col]) {
+            distTo[to] = distTo[from] + distribution[row][col];
+            edgeTo[to] = from;
+        }
+    }
+
+    private void topologicalSP(double[][] distribution) {
+
+        int size = distribution.length * distribution[0].length;
+        edgeTo = new int[size];
+        distTo = new double[size];
+
+        for (int i = 0; i < distTo.length; i++) {
+            distTo[i] = Double.POSITIVE_INFINITY;
+        }
+        for (int i = 0; i < distribution[0].length; i++) {
+            edgeTo[i] = i;
+            distTo[i] = distribution[0][i];
+        }
+
+
     }
 
     private int[] findVerticalSeamAux(double[][] distribution) {
@@ -216,10 +277,18 @@ public class SeamCarver {
         }
     }
 
-    public static void main(String[] args) {
-        Picture pic = new Picture(args[0]);
-        SeamCarver sc = new SeamCarver(pic);
-        sc.picture().show();
-        sc.rotatedPic.show();
-    }
+     public static void main(String[] args) {
+         Picture pic = new Picture(args[0]);
+         SeamCarver sc = new SeamCarver(pic);
+
+//         double[][] energy = new double[5][];
+//         energy[0] = new double[]{1000.00, 1000.00, 1000.00, 1000.00, 1000.00};
+//         energy[1] = new double[]{1000.00, 289.38, 262.85, 309.55, 1000.00};
+//         energy[2] = new double[]{1000.00, 228.17, 199.03, 183.06, 1000.00};
+//         energy[3] = new double[]{1000.00, 145.77, 269.66, 278.22, 1000.00};
+//         energy[4] = new double[]{1000.00, 1000.00, 1000.00, 1000.00, 1000.00};
+//
+//         int[] seam = sc.findVerticalSeamAux(energy);
+
+     }
 }
