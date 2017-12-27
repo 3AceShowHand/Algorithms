@@ -11,15 +11,12 @@ public class SeamCarver {
     private int[] edgeTo;
     private double[] distTo;
 
-    private Picture transposed;
-
     // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         if (picture == null) {
             throw new IllegalArgumentException("Given a null picture object");
         }
         pic = new Picture(picture);
-        transposed = transpose(pic);
     }
 
     private Picture transpose(Picture p) {
@@ -43,17 +40,14 @@ public class SeamCarver {
         return res;
     }
 
-    // current picture
     public Picture picture() {
-        return pic;
+        return new Picture(pic);
     }
 
-    // width of current picture
     public int width() {
         return pic.width();
     }
 
-    // height of current picture
     public int height() {
         return pic.height();
     }
@@ -186,23 +180,35 @@ public class SeamCarver {
         for (int i = 0; i < res.length; i++) {
             res[i] = st.pop();
         }
-
         return res;
     }
 
-    // sequence of indices for vertical seam
     public int[] findVerticalSeam() {
         double[][] distribution = buildDistribution(pic);
         return findVerticalSeamAux(distribution);
     }
 
-    // sequence of indices for horizontal seam
-    public int[] findHorizontalSeam() {
-        double[][] rotated = buildDistribution(transposed);
-        return findVerticalSeamAux(rotated);
-    }
+    private Picture verticalShiftPictureAux(Picture p, int[] seam) {
+        if (p.width() <= 1) {
+            throw new IllegalArgumentException("The width of given picture is less than or equal to 1");
+        }
+        if (seam == null) {
+            throw new IllegalArgumentException("Given a null seam object");
+        }
+        if (seam.length != p.height()) {
+            throw new IllegalArgumentException("The length of the seam not match the height of the given picture");
+        }
+        for (int i = 0; i < seam.length; i++) {
+            if (seam[i] < 0 || seam[i] >= p.width()) {
+                throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
+            }
+            if (i < (seam.length - 1)) {
+                if (Math.abs(seam[i] - seam[i+1]) > 1) {
+                    throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
+                }
+            }
+        }
 
-    private void verticalShiftPicture(Picture p, int[] seam) {
         Picture picture = new Picture(p.width() - 1, p.height());
         for (int row = 0; row < picture.height(); row++) {
             int split = seam[row];
@@ -215,65 +221,22 @@ public class SeamCarver {
                 picture.set(col, row, copy);
             }
         }
-        this.pic = picture;
+        return picture;
     }
 
-    // remove vertical seam from current picture
     public void removeVerticalSeam(int[] seam) {
-        if (pic.width() <= 1) {
-            throw new IllegalArgumentException("The width of given picture is less than or equal to 1");
-        }
-        if (seam == null) {
-            throw new IllegalArgumentException("Given a null seam object");
-        }
-        if (seam.length != pic.height()) {
-            throw new IllegalArgumentException("The height of the seam not match the width of the given picture");
-        }
-        for (int i = 0; i < seam.length; i++) {
-            if (seam[i] < 0 || seam[i] >= width()) {
-                throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
-            }
-            if (i < (seam.length - 1)){
-                if (Math.abs(seam[i] - seam[i+1]) > 1) {
-                    throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
-                }
-            }
-        }
-        verticalShiftPicture(pic, seam);
+        this.pic = verticalShiftPictureAux(pic, seam);
     }
 
-    // remove horizontal seam from current picture
+    public int[] findHorizontalSeam() {
+        Picture transposed = transpose(pic);
+        double[][] rotated = buildDistribution(transposed);
+        return findVerticalSeamAux(rotated);
+    }
+
     public void removeHorizontalSeam(int[] seam) {
-        if (pic.height() <= 1) {
-            throw new IllegalArgumentException("The height of given picture is less than or equal to 1");
-        }
-        if (seam == null) {
-            throw new IllegalArgumentException("Given a null seam object");
-        }
-        if (seam.length != width()) {
-            throw new IllegalArgumentException("The length of the seam not math the height of the given picture");
-        }
-        for (int i = 0; i < seam.length; i++) {
-            if (seam[i] < 0 || seam[i] >= height()) {
-                throw new IllegalArgumentException("The entry in seam is not in range 0 to the width of the given picture");
-            }
-            if (i < (seam.length - 1)) {
-                if (Math.abs(seam[i] - seam[i+1]) > 1) {
-                    throw new IllegalArgumentException("The differ between two adjacent entries more than 1");
-                }
-            }
-        }
-        verticalShiftPicture(transposed, seam);
+        Picture transposed = transpose(pic);
+        transposed = verticalShiftPictureAux(transposed, seam);
         pic = transpose(transposed);
     }
-
-    // public static void main(String[] args) {
-    //     Picture picture = new Picture(args[0]);
-    //     SeamCarver sc = new SeamCarver(picture);
-
-    //     sc.picture().show();
-
-    //     sc.removeVerticalSeam(sc.findVerticalSeam());
-    //     sc.picture().show();
-    // }
 }
