@@ -1,10 +1,14 @@
+import edu.princeton.cs.algs4.In;
 
+import java.util.ArrayList;
 
 public class BaseballElimination {
 
     private int num;
 
     public BaseballElimination(String filename) {
+        In file = new In(filename);
+        num = file.readInt();
 
     }
 
