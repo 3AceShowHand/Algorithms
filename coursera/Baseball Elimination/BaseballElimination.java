@@ -2,22 +2,23 @@ import edu.princeton.cs.algs4.In;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import edu.princeton.cs.algs4.FordFulkerson;
 
 public class BaseballElimination {
 
     private final HashMap<String, HashMap<String, Integer>> records;
     private final int num;
+    private int maxWin;
+    private ArrayList<String> teamNames;
 
     public BaseballElimination(String filename) {
         In file = new In(filename);
         num = Integer.parseInt(file.readLine());
-        
         records = new HashMap<>();
+        maxWin = 0;
         
         String[] content = file.readAllLines();
 
-        ArrayList<String> teamNames = new ArrayList<>();
+        teamNames = new ArrayList<>();
         ArrayList<String[]> summary = new ArrayList<>();
         ArrayList<String[]> detail = new ArrayList<>();
 
@@ -34,10 +35,15 @@ public class BaseballElimination {
 
         for (int idx = 0; idx < teamNames.size(); idx++) {
             String host = teamNames.get(idx);
-
+            records.get(host).put("id", idx);
             int[] current = parseIntArray(summary.get(idx));
             for (int i = 0; i < tags.length; i++) {
                 records.get(host).put(tags[i], current[i]);
+                if (tags[i].equals("wins")) {
+                    if (current[i] > maxWin) {
+                        maxWin = current[i];
+                    }
+                }
             }
 
             current = parseIntArray(detail.get(idx));
@@ -67,27 +73,60 @@ public class BaseballElimination {
         return records.keySet();
     }
 
+    private void checkTeam(final String team) {
+        if (!teamNames.contains(team)) {
+            throw new IllegalArgumentException("Given team is illegal.");
+        }
+    }
+
     public int wins(String team) {
+        checkTeam(team);
         return records.get(team).get("wins");
     }
 
     public int losses(String team) {
+        checkTeam(team);
         return records.get(team).get("losses");
     }
 
     public int remaining(String team) {
+        checkTeam(team);
         return records.get(team).get("remains");
     }
 
     public int against(String team1, String team2) {
+        checkTeam(team1);
+        checkTeam(team2);
         return records.get(team1).get(team2);
     }
 
+    private int getID(String team) {
+        return records.get(team).get("id");
+    }
+
+    private Iterable<String> getOtherTeams(String team) {
+        ArrayList<String> other = new ArrayList<>();
+        for (String t: records.keySet()) {
+            if (!t.equals(team)) {
+                other.add(t);
+            }
+        }
+        return other;
+    }
+
     public boolean isEliminated(String team) {
-        return false;
+        checkTeam(team);
+        // trivial elimination
+        if ((wins(team) + remaining(team)) < maxWin) {
+            return true;
+        } else {
+            // nontrivial elimination
+            ArrayList<String> otherTeams = (ArrayList<String>) getOtherTeams(team);
+        }
     }
 
     public Iterable<String> certificateOfElimination(String team) {
+        checkTeam(team);
         return null;
     }
 
