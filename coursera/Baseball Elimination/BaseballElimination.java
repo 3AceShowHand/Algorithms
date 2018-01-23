@@ -1,14 +1,13 @@
 import edu.princeton.cs.algs4.In;
-import edu.princeton.cs.algs4.StdOut;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import edu.princeton.cs.algs4.FordFulkerson;
 
 public class BaseballElimination {
 
-    private HashMap<String, HashMap<String, Integer>> records;
-    private int num;
+    private final HashMap<String, HashMap<String, Integer>> records;
+    private final int num;
 
     public BaseballElimination(String filename) {
         In file = new In(filename);
@@ -22,20 +21,24 @@ public class BaseballElimination {
         ArrayList<String[]> summary = new ArrayList<>();
         ArrayList<String[]> detail = new ArrayList<>();
 
+        final int split = 4;
         for (String s : content) {
             String[] line = s.trim().replaceAll("\\s+", " ").split(" ");
             teamNames.add(line[0]);
             records.put(line[0], new HashMap<>());
-            summary.add(Arrays.copyOfRange(line, 1, 4));
-            detail.add(Arrays.copyOfRange(line,4, line.length));
+            summary.add(Arrays.copyOfRange(line, 1, split));
+            detail.add(Arrays.copyOfRange(line, split, line.length));
         }
+
+        String[] tags = new String[]{"wins", "losses", "remains"};
 
         for (int idx = 0; idx < teamNames.size(); idx++) {
             String host = teamNames.get(idx);
+
             int[] current = parseIntArray(summary.get(idx));
-            records.get(host).put("wins", current[0]);
-            records.get(host).put("losses", current[1]);
-            records.get(host).put("remains", current[2]);
+            for (int i = 0; i < tags.length; i++) {
+                records.get(host).put(tags[i], current[i]);
+            }
 
             current = parseIntArray(detail.get(idx));
             for (int i = 0; i < current.length; i++) {
@@ -44,10 +47,11 @@ public class BaseballElimination {
                     records.get(host).put(against, current[i]);
                 }
             }
+
         }
     }
 
-    private static int[] parseIntArray(String[] arr) {
+    private static int[] parseIntArray(final String[] arr) {
         int[] res = new int[arr.length];
         for (int i = 0; i < arr.length; i++) {
             res[i] = Integer.parseInt(arr[i]);
@@ -88,18 +92,18 @@ public class BaseballElimination {
     }
 
     public static void main(String[] args) {
-        String filename = args[0];
-        BaseballElimination be = new BaseballElimination(filename);
-
-        StdOut.printf("There are %d teams.\n", be.numberOfTeams());
-
-        StdOut.println(be.teams());
-
-        StdOut.println(be.wins("Atlanta"));
-        StdOut.println(be.losses("New_York"));
-        StdOut.println(be.remaining("Montreal"));
-
-        StdOut.println(be.against("Atlanta", "Philadelphia"));
+        BaseballElimination division = new BaseballElimination(args[0]);
+        for (String team : division.teams()) {
+            if (division.isEliminated(team)) {
+                StdOut.print(team + " is eliminated by the subset R = { ");
+                for (String t : division.certificateOfElimination(team)) {
+                    StdOut.print(t + " ");
+                }
+                StdOut.println("}");
+            } else {
+                StdOut.println(team + " is not eliminated");
+            }
+        }
     }
 
 }
