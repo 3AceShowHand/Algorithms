@@ -3,9 +3,9 @@ import edu.princeton.cs.algs4.FlowNetwork;
 import edu.princeton.cs.algs4.FordFulkerson;
 import edu.princeton.cs.algs4.In;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.Map;
 
 public class BaseballElimination {
@@ -13,7 +13,11 @@ public class BaseballElimination {
     private final HashMap<String, HashMap<String, Integer>> records;
     private final int num;
     private int maxWin;
-    private ArrayList<String> teamNames;
+    private String maxTeam;
+    private final ArrayList<String> teamNames;
+
+    private FlowNetwork flow;
+    private FordFulkerson solver;
 
     public BaseballElimination(String filename) {
         In file = new In(filename);
@@ -47,6 +51,7 @@ public class BaseballElimination {
                 if (tags[i].equals("wins")) {
                     if (current[i] > maxWin) {
                         maxWin = current[i];
+                        maxTeam = teamNames.get(idx);
                     }
                 }
             }
@@ -110,7 +115,7 @@ public class BaseballElimination {
 
     private ArrayList<String> getOtherTeams(String team) {
         ArrayList<String> other = new ArrayList<>();
-        for (String t: records.keySet()) {
+        for (String t: teams()) {
             if (!t.equals(team)) {
                 other.add(t);
             }
@@ -123,7 +128,7 @@ public class BaseballElimination {
         int gameId = numberOfTeams() + 1;
         for (int i = 0; i < others.size(); i++) {
             String host = others.get(i);
-            for (int j = 0; j < others.size(); j++) {
+            for (int j = i + 1; j < others.size(); j++) {
                 String guest = others.get(j);
                 int[] pair = new int[]{getID(host), getID(guest), against(host, guest)};
                 res.put(gameId++, pair);
@@ -136,7 +141,7 @@ public class BaseballElimination {
         ArrayList<String> others = getOtherTeams(team);
         int numOfNode = 2 + others.size() + others.size() * (others.size() - 1) / 2;
 
-        int start = getID(team);
+        int source = getID(team);
         int target = numberOfTeams();
 
         HashMap<Integer, int[]> gameIds = generateGameId(others);
@@ -150,7 +155,7 @@ public class BaseballElimination {
             int between = value[2];
 
             if (between != 0) {
-                res.addEdge(new FlowEdge(start, key, between));
+                res.addEdge(new FlowEdge(source, key, between));
                 res.addEdge(new FlowEdge(key, host, Double.POSITIVE_INFINITY));
                 res.addEdge(new FlowEdge(key, against, Double.POSITIVE_INFINITY));
             }
@@ -164,25 +169,54 @@ public class BaseballElimination {
         return res;
     }
 
+    private int getOutput(String team) {
+        int output = 0;
+        ArrayList<String> other = getOtherTeams(team);
+        for (int i = 0; i < other.size(); i++) {
+            for (int j = i + 1; j < other.size(); j++) {
+                output += against(other.get(i), other.get(j));
+            }
+        }
+        return output;
+    }
+
     public boolean isEliminated(String team) {
         checkTeam(team);
         // trivial elimination
         if ((wins(team) + remaining(team)) < maxWin) {
             return true;
         } else {
-            int start = getID(team);
+            int source = getID(team);
             int target = numberOfTeams();
 
-            FlowNetwork flow = buildFlowNetwork(team);
-            FordFulkerson ff = new FordFulkerson(flow, start, target);
+            flow = buildFlowNetwork(team);
+            solver = new FordFulkerson(flow, source, target);
+
+            return Double.compare(solver.value(), getOutput(team)) != 0;
         }
     }
 
     public Iterable<String> certificateOfElimination(String team) {
         checkTeam(team);
-        return null;
-    }
+        if (!isEliminated(team)) {
+            return null;
+        } else if ((wins(team) + remaining(team) < maxWin)) {
+            ArrayList<String> res = new ArrayList<>();
+            res.add(maxTeam);
+            return res;
+        } else {
+            ArrayList<String> res = new ArrayList<>();
+            ArrayList<String> others = getOtherTeams(team);
 
+            for (int i = 0; i < others.size(); i++) {
+                if (solver.inCut(getID(others.get(i)))) {
+                    res.add(others.get(i));
+                }
+            }
+
+            return res;
+        }
+    }
     public static void main(String[] args) {
         BaseballElimination division = new BaseballElimination(args[0]);
         for (String team : division.teams()) {
@@ -197,5 +231,4 @@ public class BaseballElimination {
             }
         }
     }
-
 }
