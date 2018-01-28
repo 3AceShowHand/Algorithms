@@ -14,8 +14,6 @@ public class BaseballElimination {
     private final int num;
     private int maxWin;
     private ArrayList<String> teamNames;
-    private int start;
-    private int target;
 
     public BaseballElimination(String filename) {
         In file = new In(filename);
@@ -61,9 +59,6 @@ public class BaseballElimination {
                 }
             }
         }
-
-        start = num;
-        target = start + 1;
     }
 
     private static int[] parseIntArray(final String[] arr) {
@@ -123,18 +118,14 @@ public class BaseballElimination {
         return other;
     }
 
-    private int getGameBetween(String team1, String team2) {
-        return records.get(team1).get(team2);
-    }
-
     private HashMap<Integer, int[]> generateGameId(ArrayList<String> others) {
         HashMap<Integer, int[]> res = new HashMap<>();
-        int gameId = target + 1;
+        int gameId = numberOfTeams() + 1;
         for (int i = 0; i < others.size(); i++) {
-            int host = getID(others.get(i));
+            String host = others.get(i);
             for (int j = 0; j < others.size(); j++) {
-                int against = getID(others.get(j));
-                int[] pair = new int[]{host, against, getGameBetween(others.get(i), others.get(j))};
+                String guest = others.get(j);
+                int[] pair = new int[]{getID(host), getID(guest), against(host, guest)};
                 res.put(gameId++, pair);
             }
         }
@@ -144,6 +135,9 @@ public class BaseballElimination {
     private FlowNetwork buildFlowNetwork(final String team) {
         ArrayList<String> others = getOtherTeams(team);
         int numOfNode = 2 + others.size() + others.size() * (others.size() - 1) / 2;
+
+        int start = getID(team);
+        int target = numberOfTeams();
 
         HashMap<Integer, int[]> gameIds = generateGameId(others);
         FlowNetwork res = new FlowNetwork(numOfNode);
@@ -176,8 +170,10 @@ public class BaseballElimination {
         if ((wins(team) + remaining(team)) < maxWin) {
             return true;
         } else {
-            FlowNetwork flow = buildFlowNetwork(team);
+            int start = getID(team);
+            int target = numberOfTeams();
 
+            FlowNetwork flow = buildFlowNetwork(team);
             FordFulkerson ff = new FordFulkerson(flow, start, target);
         }
     }
