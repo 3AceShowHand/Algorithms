@@ -7,16 +7,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+/**
+ * @author king
+ */
 public class BaseballElimination {
 
     private final HashMap<String, HashMap<String, Integer>> records;
     private final int num;
     private int maxWin;
     private String maxTeam;
-    private final ArrayList<String> teamNames;
-
-    private FlowNetwork flow;
     private FordFulkerson solver;
 
     public BaseballElimination(String filename) {
@@ -27,11 +28,13 @@ public class BaseballElimination {
         
         String[] content = file.readAllLines();
 
-        teamNames = new ArrayList<>();
+        ArrayList<String> teamNames = new ArrayList<>();
         ArrayList<String[]> summary = new ArrayList<>();
         ArrayList<String[]> detail = new ArrayList<>();
 
-        final int split = 4;
+        final String[] tags = new String[]{"wins", "losses", "remains"};
+        final int split = tags.length + 1;
+
         for (String s : content) {
             String[] line = s.trim().replaceAll("\\s+", " ").split(" ");
             teamNames.add(line[0]);
@@ -40,15 +43,13 @@ public class BaseballElimination {
             detail.add(Arrays.copyOfRange(line, split, line.length));
         }
 
-        String[] tags = new String[]{"wins", "losses", "remains"};
-
         for (int idx = 0; idx < teamNames.size(); idx++) {
             String host = teamNames.get(idx);
             records.get(host).put("id", idx);
             int[] current = parseIntArray(summary.get(idx));
             for (int i = 0; i < tags.length; i++) {
                 records.get(host).put(tags[i], current[i]);
-                if (tags[i].equals("wins")) {
+                if ("wins".equals(tags[i])) {
                     if (current[i] > maxWin) {
                         maxWin = current[i];
                         maxTeam = teamNames.get(idx);
@@ -59,19 +60,9 @@ public class BaseballElimination {
             current = parseIntArray(detail.get(idx));
             for (int i = 0; i < current.length; i++) {
                 String against = teamNames.get(i);
-                if (!host.equals(against)) {
-                    records.get(host).put(against, current[i]);
-                }
+                records.get(host).put(against, current[i]);
             }
         }
-    }
-
-    private static int[] parseIntArray(final String[] arr) {
-        int[] res = new int[arr.length];
-        for (int i = 0; i < arr.length; i++) {
-            res[i] = Integer.parseInt(arr[i]);
-        }
-        return res;
     }
 
     public int numberOfTeams() {
@@ -83,7 +74,7 @@ public class BaseballElimination {
     }
 
     private void checkTeam(final String team) {
-        if (!teamNames.contains(team)) {
+        if (!((Set<String>) teams()).contains(team)) {
             throw new IllegalArgumentException("Given team is illegal.");
         }
     }
@@ -107,6 +98,51 @@ public class BaseballElimination {
         checkTeam(team1);
         checkTeam(team2);
         return records.get(team1).get(team2);
+    }
+
+    public boolean isEliminated(String team) {
+        checkTeam(team);
+        // trivial elimination
+        if ((wins(team) + remaining(team)) < maxWin) {
+            return true;
+        } else {
+            final int source = getID(team);
+            final int target = numberOfTeams();
+
+            final FlowNetwork flow = buildFlowNetwork(team);
+            solver = new FordFulkerson(flow, source, target);
+
+            return Double.compare(solver.value(), getOutput(team)) != 0;
+        }
+    }
+
+    public Iterable<String> certificateOfElimination(String team) {
+        checkTeam(team);
+        if (!isEliminated(team)) {
+            return null;
+        } else if ((wins(team) + remaining(team) < maxWin)) {
+            ArrayList<String> res = new ArrayList<>();
+            res.add(maxTeam);
+            return res;
+        } else {
+            ArrayList<String> res = new ArrayList<>();
+            final ArrayList<String> others = getOtherTeams(team);
+
+            for (String other : others) {
+                if (solver.inCut(getID(other))) {
+                    res.add(other);
+                }
+            }
+            return res;
+        }
+    }
+
+    private static int[] parseIntArray(final String[] arr) {
+        int[] res = new int[arr.length];
+        for (int i = 0; i < arr.length; i++) {
+            res[i] = Integer.parseInt(arr[i]);
+        }
+        return res;
     }
 
     private int getID(String team) {
@@ -178,57 +214,5 @@ public class BaseballElimination {
             }
         }
         return output;
-    }
-
-    public boolean isEliminated(String team) {
-        checkTeam(team);
-        // trivial elimination
-        if ((wins(team) + remaining(team)) < maxWin) {
-            return true;
-        } else {
-            int source = getID(team);
-            int target = numberOfTeams();
-
-            flow = buildFlowNetwork(team);
-            solver = new FordFulkerson(flow, source, target);
-
-            return Double.compare(solver.value(), getOutput(team)) != 0;
-        }
-    }
-
-    public Iterable<String> certificateOfElimination(String team) {
-        checkTeam(team);
-        if (!isEliminated(team)) {
-            return null;
-        } else if ((wins(team) + remaining(team) < maxWin)) {
-            ArrayList<String> res = new ArrayList<>();
-            res.add(maxTeam);
-            return res;
-        } else {
-            ArrayList<String> res = new ArrayList<>();
-            ArrayList<String> others = getOtherTeams(team);
-
-            for (int i = 0; i < others.size(); i++) {
-                if (solver.inCut(getID(others.get(i)))) {
-                    res.add(others.get(i));
-                }
-            }
-
-            return res;
-        }
-    }
-    public static void main(String[] args) {
-        BaseballElimination division = new BaseballElimination(args[0]);
-        for (String team : division.teams()) {
-            if (division.isEliminated(team)) {
-                StdOut.print(team + " is eliminated by the subset R = { ");
-                for (String t : division.certificateOfElimination(team)) {
-                    StdOut.print(t + " ");
-                }
-                StdOut.println("}");
-            } else {
-                StdOut.println(team + " is not eliminated");
-            }
-        }
     }
 }
