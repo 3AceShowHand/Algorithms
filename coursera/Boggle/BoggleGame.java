@@ -83,16 +83,18 @@ public class BoggleGame extends JFrame {
     private static final int HARD        = 3;
     private static final int IMPOSSIBLE  = 4;
 
-    // keep these two values in sync!
-    // used to force the JTextfield and the JList to be the same length 
+    /*
+    keep these two values in sync!
+    used to force the JTextfield and the JList to be the same length
+    */
     private static final int DEF_COLUMNS = 10;
     private static final String MAX_WORD_SIZE = "INCONSEQUENTIALLY";
 
 
-    // keeps track of the level
+    /* keeps track of the level */
     private int gameDifficulty = 0;
 
-    // number and rows and columns of board
+    /* number and rows and columns of board */
     private int BOARD_ROWS;
     private int BOARD_COLS;
 
@@ -102,9 +104,10 @@ public class BoggleGame extends JFrame {
     private int points = 0;          // current number of points
     private Timer timer = new Timer(); 
 
-    private String[] emptyList = new String[0]; 
+    private String[] emptyList = new String[0];
 
-    private LinkedHashSet<String> foundWords;      // to keep words in same order as entered
+    // to keep words in same order as entered
+    private LinkedHashSet<String> foundWords;
     private TreeSet<String> validWords;
     private TreeSet<String> opponentFoundWords;
     private JList foundWordsList;
@@ -385,27 +388,31 @@ public class BoggleGame extends JFrame {
 
         // all words in shakespeare
         In in1 = new In(new File("dictionary-shakespeare.txt"));
-        shakespeareDictionary = new SET<String>();
-        for (String s : in1.readAllStrings())
+        shakespeareDictionary = new SET<>();
+        for (String s : in1.readAllStrings()) {
             shakespeareDictionary.add(s);
+        }
 
         // all words in shakespeare
         In in2 = new In(new File("dictionary-nursery.txt"));
-        nurseryDictionary = new SET<String>();
-        for (String s : in2.readAllStrings())
+        nurseryDictionary = new SET<>();
+        for (String s : in2.readAllStrings()) {
             nurseryDictionary.add(s);
+        }
 
         // about 20K common words
         In in3 = new In(new File("dictionary-common.txt"));
-        commonDictionary = new SET<String>();
-        for (String s : in3.readAllStrings())
+        commonDictionary = new SET<>();
+        for (String s : in3.readAllStrings()) {
             commonDictionary.add(s);
+        }
 
         // all words in Algorithms 4/e
         In in4 = new In(new File("dictionary-algs4.txt"));
-        algs4Dictionary = new SET<String>();
-        for (String s : in4.readAllStrings())
+        algs4Dictionary = new SET<>();
+        for (String s : in4.readAllStrings()) {
             algs4Dictionary.add(s);
+        }
 
         // dictionary
         In in = new In(new File("dictionary-yawl.txt"));
@@ -447,7 +454,7 @@ public class BoggleGame extends JFrame {
 
         // all valid words
         Iterable<String> words = solver.getAllValidWords(board);
-        validWords = new TreeSet<String>();
+        validWords = new TreeSet<>();
         int possiblePoints = 0;
         for (String s : words) {
             validWords.add(s);
@@ -456,41 +463,52 @@ public class BoggleGame extends JFrame {
         possiblePointsLabel.setText("Possible Points: " + possiblePoints);
 
         // opponent's words
-        opponentFoundWords = new TreeSet<String>();
+        opponentFoundWords = new TreeSet<>();
         if (gameDifficulty == NURSERY) {
-            for (String word : validWords)
-                if (nurseryDictionary.contains(word))
+            for (String word : validWords) {
+                if (nurseryDictionary.contains(word)) {
                     opponentFoundWords.add(word);
+                }
+            }
         }
 
         else if (gameDifficulty == SHAKESPEARE) {
-            for (String word : validWords)
-                if (shakespeareDictionary.contains(word) && StdRandom.uniform(3) != 0)
+            for (String word : validWords) {
+                if (shakespeareDictionary.contains(word) && StdRandom.uniform(3) != 0) {
                     opponentFoundWords.add(word);
+                }
+            }
         }
 
         else if (gameDifficulty == ALGORITHMS) {
-            for (String word : validWords)
-                if (algs4Dictionary.contains(word))
+            for (String word : validWords) {
+                if (algs4Dictionary.contains(word)) {
                     opponentFoundWords.add(word);
+                }
+            }
         }
 
         else if (gameDifficulty == HARD) {
-            for (String word : validWords)
-                if (commonDictionary.contains(word) && StdRandom.bernoulli())
+            for (String word : validWords) {
+                if (commonDictionary.contains(word) && StdRandom.bernoulli()) {
                     opponentFoundWords.add(word);
+                }
+            }
         }
 
         else if (gameDifficulty == IMPOSSIBLE) {
-            for (String word : validWords)
-                if (StdRandom.uniform(4) != 0)
+            for (String word : validWords) {
+                if (StdRandom.uniform(4) != 0) {
                     opponentFoundWords.add(word);
+                }
+            }
         }
 
         // opponent's score
         oppCurScore = 0;
-        for (String word : opponentFoundWords)
+        for (String word : opponentFoundWords) {
             oppCurScore += scoreWord(word);
+        }
 
         oppScoreLabel.setText("Opponent's Points: " + oppCurScore);
         timer.cancel();
@@ -519,8 +537,9 @@ public class BoggleGame extends JFrame {
         int i = 0;
         int n = 0;
         for (String s : validWords) {
-            if (foundWords.contains(s))
+            if (foundWords.contains(s)) {
                 indices[i++] = n;
+            }
             n++;
         }
         validWordsList.setSelectedIndices(indices);
@@ -591,12 +610,15 @@ public class BoggleGame extends JFrame {
     private void checkWord() {
         String s; 
         // decide to which to use, take the longer
-        if (entryField.getText().length() >= bp.getCurrentPath().length())
+        if (entryField.getText().length() >= bp.getCurrentPath().length()) {
             s = entryField.getText().toUpperCase();
-        else 
+        } else {
             s = bp.getCurrentPath().toUpperCase();
+        }
         s = s.trim();
-        if (s.equals("")) return;
+        if (s.equals("")) {
+            return;
+        }
 
         // search for word
         if (validWords.contains(s) && !foundWords.contains(s)) { 
@@ -640,11 +662,17 @@ public class BoggleGame extends JFrame {
     private int scoreWord(String s) {
         int pointValue;
         int length = s.length();
-        if      (length < 5)  pointValue = 1;
-        else if (length == 5) pointValue = 2;
-        else if (length == 6) pointValue = 3;
-        else if (length == 7) pointValue = 5;
-        else                  pointValue = 11;
+        if      (length < 5) {
+            pointValue = 1;
+        } else if (length == 5) {
+            pointValue = 2;
+        } else if (length == 6) {
+            pointValue = 3;
+        } else if (length == 7) {
+            pointValue = 5;
+        } else {
+            pointValue = 11;
+        }
         return pointValue;
     }
     
@@ -796,7 +824,9 @@ public class BoggleGame extends JFrame {
          */
         public void highlightCubes() {
             for (int i = 0; i < path.length; i++) {
-                if (path[i] == -1) break;
+                if (path[i] == -1) {
+                    break;
+                }
                 cubes[path[i]].setBackground(new Color(232, 237, 76));
             }
         }
@@ -805,9 +835,13 @@ public class BoggleGame extends JFrame {
          * Un-highlight all the cubes in the path array.
          */
         public void unhighlightCubes() {
-            if (path == null) return;
+            if (path == null) {
+                return;
+            }
             for (int i = 0; i < path.length; i++) {
-                if (path[i] == -1) break;
+                if (path[i] == -1) {
+                    break;
+                }
                 cubes[path[i]].setBackground(new Color(146, 183, 219));
             }
         }
@@ -817,7 +851,9 @@ public class BoggleGame extends JFrame {
          * @param s String to match on the board
          */
         public void matchWord(String s) {
-            if (path != null) unhighlightCubes();
+            if (path != null) {
+                unhighlightCubes();
+            }
             path = new int[NUM_OF_CUBES];
             for (int i = 0; i < path.length; i++) {
                 path[i] = -1;
@@ -828,7 +864,9 @@ public class BoggleGame extends JFrame {
                 if (s.startsWith(cubes[i].getText().toUpperCase())) {
                     dfs(s, 0, 0, i / BOARD_COLS, i % BOARD_COLS);
                 }
-                if (foundWord) break;
+                if (foundWord) {
+                    break;
+                }
             }
             if (foundWord) {
                 highlightCubes();
@@ -847,7 +885,9 @@ public class BoggleGame extends JFrame {
             // if the word has already been found
             // if (foundWord) return;
             // out of bounds
-            if (i < 0 || j < 0 || i >= BOARD_ROWS || j >= BOARD_COLS) return;
+            if (i < 0 || j < 0 || i >= BOARD_ROWS || j >= BOARD_COLS) {
+                return;
+            }
             // return if entire word is found
             if (curChar >= s.length()) {
                 foundWord = true;
@@ -855,14 +895,18 @@ public class BoggleGame extends JFrame {
             }
             // can't use a cell more than once
             for (int n = 0; n < path.length; n++) {
-                if (path[n] == (i*BOARD_COLS)+j) return;
+                if (path[n] == (i*BOARD_COLS)+j) {
+                    return;
+                }
             }
             // ignore if character if there is a 'Q' with no 'U'
-            if (curChar != 0 && s.charAt(curChar-1) == 'Q' && s.charAt(curChar) != 'U')
+            if (curChar != 0 && s.charAt(curChar-1) == 'Q' && s.charAt(curChar) != 'U') {
                 return;
+            }
             // increment character count if it is a 'U' after a 'Q' and keep searching 
-            if (curChar != 0 && s.charAt(curChar-1) == 'Q' && s.charAt(curChar) == 'U')
+            if (curChar != 0 && s.charAt(curChar-1) == 'Q' && s.charAt(curChar) == 'U') {
                 curChar += 1;
+            }
             if (curChar >= s.length()) {
                 foundWord = true;
                 return;
@@ -875,11 +919,17 @@ public class BoggleGame extends JFrame {
             path[pathIndex] = (i*BOARD_COLS)+j;
             //visited[i][j] = true;
             // consider all neighbors
-            for (int ii = -1; ii <= 1; ii++)
-                for (int jj = -1; jj <= 1; jj++)
-                    if (!foundWord) dfs(s, curChar+1, pathIndex+1, i + ii, j + jj);
+            for (int ii = -1; ii <= 1; ii++) {
+                for (int jj = -1; jj <= 1; jj++) {
+                    if (!foundWord) {
+                        dfs(s, curChar+1, pathIndex+1, i + ii, j + jj);
+                    }
+                }
+            }
             
-            if (!foundWord) path[curChar] = -1;
+            if (!foundWord) {
+                path[curChar] = -1;
+            }
         }
     }
        
@@ -957,6 +1007,7 @@ public class BoggleGame extends JFrame {
     public static void main(final String[] args) {
         
         SwingUtilities.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 int rows = 0;
                 int cols = 0;
