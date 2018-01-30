@@ -45,9 +45,13 @@ public class BSTMap<Key extends Comparable<Key> , Value> implements Map61B<Key, 
         Node x = root;
         while (x != null) {
             int cmp = key.compareTo(x.key);
-            if (cmp < 0) x = x.left;
-            else if (cmp > 0) x = x.right;
-            else return x.val;
+            if (cmp < 0) {
+                x = x.left;
+            } else if (cmp > 0) {
+                x = x.right;
+            } else {
+                return x.val;
+            }
         }
         return null;
     }
@@ -66,7 +70,9 @@ public class BSTMap<Key extends Comparable<Key> , Value> implements Map61B<Key, 
     }
 
     private Node put(Node x, Key key, Value val) {
-        if (x == null) return new Node(key, val, 1);
+        if (x == null) {
+            return new Node(key, val, 1);
+        }
         int cmp = key.compareTo(x.key);
         if (cmp < 0) {
             x.left = put(x.left, key, val);

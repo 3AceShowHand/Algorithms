@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 /** Utility class for writing Java objects to files. The Object must
   * implement the Serializable interface. */
 
+
 public class ObjectWriter {
     private FileOutputStream fos;
     private ObjectOutputStream os;

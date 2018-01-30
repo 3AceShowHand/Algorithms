@@ -64,6 +64,7 @@ public class SimpleOomage implements Oomage {
         randomSimpleOomage().draw(0.75, 0.25, 1);
     }
 
+    @Override
     public String toString() {
         return "R: " + red + ", G: " + green + ", B: " + blue;
     }
