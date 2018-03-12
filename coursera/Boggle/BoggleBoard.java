@@ -86,25 +86,20 @@ public class BoggleBoard {
         In in = new In(filename);
         m = in.readInt();
         n = in.readInt();
-        if (m <= 0) {
-            throw new IllegalArgumentException("number of rows must be a positive integer");
-        }
-        if (n <= 0) {
-            throw new IllegalArgumentException("number of columns must be a positive integer");
-        }
+        if (m <= 0) throw new IllegalArgumentException("number of rows must be a positive integer");
+        if (n <= 0) throw new IllegalArgumentException("number of columns must be a positive integer");
         board = new char[m][n];
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 String letter = in.readString().toUpperCase();
-                if (letter.equals("QU")) {
+                if (letter.equals("QU"))
                     board[i][j] = 'Q';
-                } else if (letter.length() != 1) {
+                else if (letter.length() != 1)
                     throw new IllegalArgumentException("invalid character: " + letter);
-                } else if (ALPHABET.indexOf(letter) == -1) {
+                else if (ALPHABET.indexOf(letter) == -1)
                     throw new IllegalArgumentException("invalid character: " + letter);
-                } else {
+                else 
                     board[i][j] = letter.charAt(0);
-                }
             }
         }
     }
@@ -118,12 +113,8 @@ public class BoggleBoard {
     public BoggleBoard(int m, int n) {
         this.m = m;
         this.n = n;
-        if (m <= 0) {
-            throw new IllegalArgumentException("number of rows must be a positive integer");
-        }
-        if (n <= 0) {
-            throw new IllegalArgumentException("number of columns must be a positive integer");
-        }
+        if (m <= 0) throw new IllegalArgumentException("number of rows must be a positive integer");
+        if (n <= 0) throw new IllegalArgumentException("number of columns must be a positive integer");
         board = new char[m][n];
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
@@ -141,21 +132,15 @@ public class BoggleBoard {
     public BoggleBoard(char[][] a) {
         this.m = a.length;
         this.n = a[0].length;
-        if (m <= 0) {
-            throw new IllegalArgumentException("number of rows must be a positive integer");
-        }
-        if (n <= 0) {
-            throw new IllegalArgumentException("number of columns must be a positive integer");
-        }
+        if (m <= 0) throw new IllegalArgumentException("number of rows must be a positive integer");
+        if (n <= 0) throw new IllegalArgumentException("number of columns must be a positive integer");
         board = new char[m][n];
         for (int i = 0; i < m; i++) {
-            if (a[i].length != n) {
+            if (a[i].length != n)
                 throw new IllegalArgumentException("char[][] array is ragged");
-            }
             for (int j = 0; j < n; j++) {
-                if (ALPHABET.indexOf(a[i][j]) == -1) {
+                if (ALPHABET.indexOf(a[i][j]) == -1)
                     throw new IllegalArgumentException("invalid character: " + a[i][j]);
-                }
                 board[i][j] = a[i][j];
             }
         }
@@ -193,17 +178,13 @@ public class BoggleBoard {
      * Returns a string representation of the board, replacing 'Q' with "Qu".
      * @return a string representation of the board, replacing 'Q' with "Qu"
      */
-    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(m + " " + n + "\n");
         for (int i = 0; i < m; i++) {
             for (int j = 0; j < n; j++) {
                 sb.append(board[i][j]);
-                if (board[i][j] == 'Q') {
-                    sb.append("u ");
-                } else {
-                    sb.append("  ");
-                }
+                if (board[i][j] == 'Q') sb.append("u ");
+                else sb.append("  ");
             }
             sb.append("\n");
         }
