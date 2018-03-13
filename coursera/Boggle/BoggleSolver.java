@@ -4,6 +4,8 @@
 
 import edu.princeton.cs.algs4.SET;
 
+import java.util.ArrayList;
+
 public class BoggleSolver {
 
     private final SET<String> dict;
@@ -22,7 +24,8 @@ public class BoggleSolver {
         if (board == null) {
             throw new IllegalArgumentException("Given board is invalid");
         }
-        return null;
+        ArrayList<String> validWords = new ArrayList<>();
+        return validWords;
     }
 
     // return the score of the given word if it is in the dictionary, zero otherwise.
