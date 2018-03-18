@@ -6,17 +6,18 @@ import edu.princeton.cs.algs4.SET;
 import edu.princeton.cs.algs4.TST;
 import edu.princeton.cs.algs4.StdRandom;
 
+import java.util.Arrays;
+import java.util.Iterator;
+
 public class BoggleSolver {
 
     private final TST<Integer> dict;
 
     public BoggleSolver(String[] dictionary) {
-        fisherYatesShuffle(dictionary);
-        if (dictionary == null) {
-            throw new IllegalArgumentException("Given dictionary is invalid.");
-        }
+        String[] temp = Arrays.copyOf(dictionary, dictionary.length);
+        fisherYatesShuffle(temp);
         dict = new TST<>();
-        for (String item: dictionary) {
+        for (String item: temp) {
             dict.put(item, scoreOf(item));
         }
     }
@@ -25,14 +26,15 @@ public class BoggleSolver {
         if (board == null) {
             throw new IllegalArgumentException("Given board is invalid");
         }
-
-        boolean marked[][] = new boolean[board.rows()][board.cols()];
         SET<String> validWords = new SET<>();
+        SET<String> invalidWords = new SET<>();
+        for (int i = 0; i < board.rows(); i++) {
+            for (int j = 0; j < board.cols(); j++) {
+                boolean[][] marked = new boolean[board.rows()][board.cols()];
+                dfs(board, i, j, "", marked, validWords, invalidWords);
 
-        StringBuilder prefix = new StringBuilder();
-
-        dfs(board, 0, 0, prefix, marked, validWords);
-
+            }
+        }
         return validWords;
     }
 
@@ -57,26 +59,21 @@ public class BoggleSolver {
         }
     }
 
-    private void dfs(BoggleBoard board, int row, int col, StringBuilder prefix, boolean[][] marked, SET<String> result) {
+    private void dfs(BoggleBoard board, int row, int col, String prefix,
+                     boolean[][] marked, SET<String> result, SET<String> invalid) {
         if (marked[row][col]) {
             return;
         }
-
         char c = board.getLetter(row, col);
-        if (c == 'Q') {
-            prefix.append("QU");
-        } else {
-            prefix.append(c);
-        }
-        String word = prefix.toString();
+        String word = (c == 'Q' ? (prefix + "QU") : (prefix + c));
 
-        if (dict.keysWithPrefix(word).) {
-            if (c == 'Q') {
-                prefix.deleteCharAt(prefix.length()-1);
-                prefix.deleteCharAt(prefix.length()-1);
-            } else {
-                prefix.deleteCharAt(prefix.length()-1);
-            }
+        if (invalid.contains(word) || invalid.contains(word.substring(0, word.length() - 1))) {
+            return;
+        }
+
+        Iterator<String> iter = dict.keysWithPrefix(word).iterator();
+        if (!iter.hasNext()) {
+            invalid.add(word);
             return;
         }
 
@@ -92,8 +89,9 @@ public class BoggleSolver {
                 } else {
                     int newrow = row + i;
                     int newcol = col + j;
-                    if (newrow >= 0 && newrow < board.rows() && newcol >= 0 && newcol < board.cols() && !marked[newrow][newcol]) {
-                        dfs(board, newrow, newcol, prefix, marked, result);
+                    if (newrow >= 0 && newrow < board.rows()
+                            && newcol >= 0 && newcol < board.cols()) {
+                        dfs(board, newrow, newcol, word, marked, result, invalid);
                     }
                 }
             }
@@ -103,30 +101,31 @@ public class BoggleSolver {
 
     private void fisherYatesShuffle(String[] strs) {
         // implementation of fisher-Yates shuffle algorithm
-        int last = strs.length-1;
+        int last = strs.length - 1;
         for (int i = 0; i < last; last--) {
-            int idx = StdRandom.uniform(last+1);
-            String t = strs[last];
-            strs[last] = strs[idx];
-            strs[idx] = t;
+            int idx = StdRandom.uniform(last + 1);
+            swap(strs, idx, last);
         }
     }
 
-    public static void main(String[] args) {
-        In in = new In(args[0]);
-
-        BoggleBoard board = new BoggleBoard(args[1]);
-
-        String[] dictionary = in.readAllStrings();
-        BoggleSolver solver = new BoggleSolver(dictionary);
-        int score = 0;
-
-        Iterable<String> validWords = solver.getAllValidWords(board);
-        for (String word : validWords) {
-            StdOut.println(word);
-            score += solver.scoreOf(word);
-        }
-        StdOut.println("Score = " + score);
+    private static void swap(String[] strs, int i, int j) {
+        String t = strs[i];
+        strs[i] = strs[j];
+        strs[j] = t;
     }
+
+    // public static void main(String[] args) {
+    //     In in = new In(args[0]);
+    //     BoggleBoard board = new BoggleBoard(args[1]);
+    //     String[] dictionary = in.readAllStrings();
+    //     BoggleSolver solver = new BoggleSolver(dictionary);
+    //     int score = 0;
+    //     Iterable<String> validWords = solver.getAllValidWords(board);
+    //     for (String word : validWords) {
+    //         StdOut.println(word);
+    //         score += solver.scoreOf(word);
+    //     }
+    //     StdOut.println("Score = " + score);
+    // }
 
 }
