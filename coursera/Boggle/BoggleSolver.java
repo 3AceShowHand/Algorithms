@@ -4,7 +4,9 @@
 
 import edu.princeton.cs.algs4.Alphabet;
 import edu.princeton.cs.algs4.SET;
-import edu.princeton.cs.algs4.StdOut;
+
+import java.util.HashSet;
+
 
 public class BoggleSolver {
 
@@ -83,13 +85,13 @@ public class BoggleSolver {
     }
 
     private final RwayTrie trie;
-    private final SET<String> dict;
+    private final HashSet<String> dict;
 
     public BoggleSolver(String[] dictionary) {
 
         Alphabet alphabet = Alphabet.UPPERCASE;
         trie = new RwayTrie(alphabet);
-        dict = new SET<>();
+        dict = new HashSet<>();
 
         for (String s: dictionary) {
             trie.put(s, scoreOf(s));
@@ -118,7 +120,7 @@ public class BoggleSolver {
             throw new IllegalArgumentException("Given word is invalid");
         }
         int length = word.length();
-        if (!dict.contains(word) || length <= 2) {
+        if (!trie.contains(word) || length <= 2) {
             return 0;
         } else if (length <= 4) {
             return 1;
@@ -167,7 +169,16 @@ public class BoggleSolver {
         marked[row][col] = false;
     }
 
-     public static void main(String[] args) {
-
-     }
+//     public static void main(String[] args) {
+//         In in = new In(args[0]);
+//         String[] dictionary = in.readAllStrings();
+//         BoggleSolver solver = new BoggleSolver(dictionary);
+//         BoggleBoard board = new BoggleBoard(args[1]);
+//         int score = 0;
+//         for (String word : solver.getAllValidWords(board)) {
+//             StdOut.println(word);
+//             score += solver.scoreOf(word);
+//         }
+//         StdOut.println("Score = " + score);
+//     }
 }
