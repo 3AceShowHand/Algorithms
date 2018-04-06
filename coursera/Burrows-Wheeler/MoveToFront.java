@@ -1,7 +1,6 @@
 import edu.princeton.cs.algs4.Alphabet;
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
-
 import java.util.LinkedList;
 
 public class MoveToFront {
@@ -22,7 +21,6 @@ public class MoveToFront {
     // apply move-to-front encoding, reading from standard input and writing to standard output
     public static void encode() {
         // maintain an ordered sequence of 256 extended ASCII characters.
-
         LinkedList<Character> sequences = init();
 
         while (!BinaryStdIn.isEmpty()) {

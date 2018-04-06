@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -33,7 +32,7 @@ public class BurrowsWheeler {
     // apply Burrows-Wheeler inverse transform, reading from standard input and writing to standard output
     // the inputs to inverseTransform is output of transform.
     public static void inverseTransform() {
-        String input = BinaryStdIn.readString();                    // t
+        String input = BinaryStdIn.readString();
         int first = BinaryStdIn.readInt();
 
         char[] firstColumn = (new String(input)).toCharArray();

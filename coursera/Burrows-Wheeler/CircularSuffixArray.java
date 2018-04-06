@@ -1,7 +1,5 @@
-import edu.princeton.cs.algs4.StdOut;
-
-import java.util.*;
-
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class CircularSuffixArray {
 
@@ -65,13 +63,12 @@ public class CircularSuffixArray {
     }
 
     // unit testing (required)
-    public static void main(String[] args) {
-        String s = "ABRACADABRA!";
-        CircularSuffixArray t = new CircularSuffixArray(s);
-
-        StdOut.printf("the length of s is: %s\n", t.length());
-        for (int i = 0 ; i < t.length(); i++) {
-            StdOut.println(t.index(i));
-        }
-    }
+//    public static void main(String[] args) {
+//        String s = "ABRACADABRA!";
+//        CircularSuffixArray t = new CircularSuffixArray(s);
+//        StdOut.printf("the length of s is: %s\n", t.length());
+//        for (int i = 0 ; i < t.length(); i++) {
+//            StdOut.println(t.index(i));
+//        }
+//    }
 }
