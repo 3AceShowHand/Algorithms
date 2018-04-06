@@ -11,21 +11,14 @@ public class BurrowsWheeler {
         CircularSuffixArray csa = new CircularSuffixArray(input);
 
         char endup = input.charAt(input.length() - 1);
-        StringBuilder sb = new StringBuilder();
-        int first = -1;
+        int first = input.indexOf(endup);
+        BinaryStdOut.write(first);
+
         for (int i = 0; i < csa.length(); i++) {
             int index = csa.index(i);
             char c = input.charAt(index);
-            if (first == -1 && c == endup) {
-                first = index;
-            }
-            sb.append(c);
+            BinaryStdOut.write(c);
         }
-
-        String transformed = sb.toString();
-
-        BinaryStdOut.write(first);
-        BinaryStdOut.write(transformed);
         BinaryStdOut.close();
     }
 
@@ -35,7 +28,7 @@ public class BurrowsWheeler {
         String input = BinaryStdIn.readString();
         int first = BinaryStdIn.readInt();
 
-        char[] firstColumn = (new String(input)).toCharArray();
+        char[] firstColumn = input.toCharArray();
         Arrays.sort(firstColumn);
         ArrayList<Character> sortedFirst = new ArrayList<>();
         for (char c: firstColumn) {
@@ -59,7 +52,7 @@ public class BurrowsWheeler {
     // if args[0] is '-', apply Burrows-Wheeler transform
     // if args[0] is '+', apply Burrows-Wheeler inverse transform
     public static void main(String[] args) {
-        if (args[0] == "-") {
+        if (args[0].equals("-")) {
             transform();
         } else {
             inverseTransform();

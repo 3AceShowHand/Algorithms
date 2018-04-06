@@ -4,7 +4,7 @@ import java.util.Comparator;
 public class CircularSuffixArray {
 
     // private ArrayList<Integer> indexes;
-    private Integer[] indexes;
+    private final Integer[] indexes;
 
     public CircularSuffixArray(String s) {
         if (s == null) {
@@ -56,19 +56,9 @@ public class CircularSuffixArray {
     }
 
     public int index(int i) {
-        if (i > length()) {
+        if (i >= length() || i < 0) {
             throw new IllegalArgumentException("i is out of index's range.");
         }
         return indexes[i];
     }
-
-    // unit testing (required)
-//    public static void main(String[] args) {
-//        String s = "ABRACADABRA!";
-//        CircularSuffixArray t = new CircularSuffixArray(s);
-//        StdOut.printf("the length of s is: %s\n", t.length());
-//        for (int i = 0 ; i < t.length(); i++) {
-//            StdOut.println(t.index(i));
-//        }
-//    }
 }

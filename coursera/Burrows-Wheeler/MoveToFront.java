@@ -25,7 +25,7 @@ public class MoveToFront {
 
         while (!BinaryStdIn.isEmpty()) {
             char c = BinaryStdIn.readChar();
-            int output = sequences.indexOf(c);
+            char output = (char) (sequences.indexOf(c) & 0xff);
             BinaryStdOut.write(output);
             if (output != 0) {
                 sequences.remove(c);
@@ -52,9 +52,9 @@ public class MoveToFront {
     // if args[0] is '-', apply move-to-front encoding
     // if args[0] is '+', apply move-to-front decoding
     public static void main(String[] args) {
-        if (args[0] == "-") {
+        if (args[0].equals("-")) {
             encode();
-        } else{
+        } else {
             decode();
         }
     }
