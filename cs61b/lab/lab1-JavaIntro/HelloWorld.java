@@ -17,11 +17,11 @@ public class HelloWorld {
         }
         System.out.println(larger(-5, 10));
     }
-    
+
     /*
     5. Functions must be declared as part of a class in Java, all functions are methods.
     6. Functions in Java only return one value.
-    */    
+    */
     
     /** Returns the larger of x and y. */
     public static int larger(int x, int y){
