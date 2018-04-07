@@ -18,19 +18,18 @@ public class MoveToFront {
         return sequences;
     }
 
-//    // apply move-to-front encoding, reading from standard input and writing to standard output
+    // apply move-to-front encoding, reading from standard input and writing to standard output
     public static void encode() {
         // maintain an ordered sequence of 256 extended ASCII characters.
         LinkedList<Character> sequences = init();
         while (!BinaryStdIn.isEmpty()) {
-            char c = BinaryStdIn.readChar();
+            Character c = BinaryStdIn.readChar();
             char idx = (char) (sequences.indexOf(c) & 0x000000ff);
             BinaryStdOut.write(idx);
             if (idx != 0) {
                 sequences.remove(c);
                 sequences.addFirst(c);
             }
-
         }
         BinaryStdOut.close();
     }
@@ -40,7 +39,7 @@ public class MoveToFront {
         LinkedList<Character> sequences = init();
         while (!BinaryStdIn.isEmpty()) {
             int idx = BinaryStdIn.readChar();
-            char c = sequences.get(idx);
+            Character c = sequences.get(idx);
             BinaryStdOut.write(c);
             if (sequences.indexOf(c) != 0) {
                 sequences.remove(c);

@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
-import java.util.Arrays;
 
 public class BurrowsWheeler {
 
@@ -27,40 +26,35 @@ public class BurrowsWheeler {
         BinaryStdOut.close();
     }
 
-    // apply Burrows-Wheeler inverse transform, reading from standard input and writing to standard output
+    // apply Burrows-Wheeler decoding, reading from standard input and writing to standard output
     public static void inverseTransform() {
         int first = BinaryStdIn.readInt();
-        char[] t = BinaryStdIn.readString().toCharArray();
+        String t = BinaryStdIn.readString();
 
-        char[] next = new char[t.length];
-        for (int i = 0; i < next.length; i++) {
-            next[i] = (char) -1;
+
+        int R = 256;
+        int[] count = new int[R+1];
+        int[] next = new int[t.length()];
+
+        // Key-indexed counting
+        for (int i = 0; i < t.length(); i++) {
+            count[t.charAt(i)+1]++;
+        }
+        for (int i = 1; i < R+1; i++) {
+            count[i] += count[i-1];
         }
 
-        char[] sorted = new char[t.length];
-        for (int i = 0; i < sorted.length; i++) {
-            sorted[i] = t[i];
+        // Compute next & write the original string
+        for (int i = 0; i < t.length(); i++) {
+            next[count[t.charAt(i)]++] = i;
         }
-        Arrays.sort(sorted);
-
-        for (int i = 0; i < sorted.length; i++) {
-            char c = t[first];
-            for (int j = 0; j < sorted.length; j++) {
-                if (sorted[j] == c) {
-                    int idx = j;
-                    if (next[idx] != (char) -1) {
-                        next[idx] = (char) first;
-                        first = idx;
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < next.length; i++) {
-            BinaryStdOut.write(next[i]);
+        for (int i = next[first], c = 0; c < t.length(); i = next[i], c++) {
+            BinaryStdOut.write(t.charAt(i));
         }
 
         BinaryStdOut.close();
     }
+
 
     private static int getPrevIndex(int idx, int length) {
         if (idx == 0) {
