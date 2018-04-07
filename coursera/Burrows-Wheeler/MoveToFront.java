@@ -29,7 +29,7 @@ public class MoveToFront {
                 sequences.remove(c);
                 sequences.addFirst(c);
             }
-            BinaryStdOut.write(c);
+            BinaryStdOut.write(idx);
         }
         BinaryStdOut.close();
     }

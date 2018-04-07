@@ -18,9 +18,11 @@ public class BurrowsWheeler {
             }
         }
         BinaryStdOut.write(first);
+
         for (int i = 0; i < csa.length(); i++) {
-            int idx = getNextIndex(csa.index(i), csa.length());
-            char c = input.charAt(idx);
+            int idx = csa.index(i);
+            int prev = getPrevIndex(idx, input.length());
+            char c = input.charAt(prev);
             BinaryStdOut.write(c);
         }
         BinaryStdOut.close();
@@ -53,8 +55,15 @@ public class BurrowsWheeler {
         BinaryStdOut.close();
     }
 
-    private static int getNextIndex(int idx, int length) {
-        return (idx + 1) % length;
+//    private static int getNextIndex(int idx, int length) {
+//        return (idx + 1) % length;
+//    }
+    private static int getPrevIndex(int idx, int length) {
+        if (idx == 0) {
+            return length - 1;
+        } else {
+            return idx - 1;
+        }
     }
 
     // if args[0] is '-', apply Burrows-Wheeler transform
