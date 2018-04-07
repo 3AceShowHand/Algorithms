@@ -10,13 +10,17 @@ public class BurrowsWheeler {
         String input = BinaryStdIn.readString();
         CircularSuffixArray csa = new CircularSuffixArray(input);
 
-        char endup = input.charAt(input.length() - 1);
-        int first = input.indexOf(endup);
-        BinaryStdOut.write(first);
-
+        int first = -1;
         for (int i = 0; i < csa.length(); i++) {
-            int index = csa.index(i);
-            char c = input.charAt(index);
+            if (csa.index(i) == 0) {
+                first = i;
+                break;
+            }
+        }
+        BinaryStdOut.write(first);
+        for (int i = 0; i < csa.length(); i++) {
+            int idx = getNextIndex(csa.index(i), csa.length());
+            char c = input.charAt(idx);
             BinaryStdOut.write(c);
         }
         BinaryStdOut.close();
@@ -47,6 +51,10 @@ public class BurrowsWheeler {
             BinaryStdOut.write(next[i]);
         }
         BinaryStdOut.close();
+    }
+
+    private static int getNextIndex(int idx, int length) {
+        return (idx + 1) % length;
     }
 
     // if args[0] is '-', apply Burrows-Wheeler transform
