@@ -39,8 +39,9 @@ public class MoveToFront {
     public static void decode() {
         LinkedList<Character> sequences = init();
         while (!BinaryStdIn.isEmpty()) {
-            char c = BinaryStdIn.readChar();
-            BinaryStdOut.write(c);
+            int idx = BinaryStdIn.readChar();
+            BinaryStdOut.write(idx);
+
             if (sequences.indexOf(c) != 0) {
                 sequences.remove(c);
                 sequences.addFirst(c);
