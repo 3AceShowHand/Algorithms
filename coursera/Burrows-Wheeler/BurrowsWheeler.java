@@ -25,8 +25,8 @@ public class BurrowsWheeler {
     // apply Burrows-Wheeler inverse transform, reading from standard input and writing to standard output
     // the inputs to inverseTransform is output of transform.
     public static void inverseTransform() {
-        String input = BinaryStdIn.readString();
         int first = BinaryStdIn.readInt();
+        String input = BinaryStdIn.readString();
 
         char[] firstColumn = input.toCharArray();
         Arrays.sort(firstColumn);

@@ -40,14 +40,14 @@ public class MoveToFront {
         LinkedList<Character> sequences = init();
         while (!BinaryStdIn.isEmpty()) {
             int idx = BinaryStdIn.readChar();
-            BinaryStdOut.write(idx);
-
+            char c = sequences.get(idx);
+            BinaryStdOut.write(c);
             if (sequences.indexOf(c) != 0) {
                 sequences.remove(c);
                 sequences.addFirst(c);
             }
-            BinaryStdOut.close();
         }
+        BinaryStdOut.close();
     }
 
     // if args[0] is '-', apply move-to-front encoding
