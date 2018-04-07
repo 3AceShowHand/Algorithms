@@ -24,12 +24,13 @@ public class MoveToFront {
         LinkedList<Character> sequences = init();
         while (!BinaryStdIn.isEmpty()) {
             char c = BinaryStdIn.readChar();
-            int idx = sequences.indexOf(c);
+            char idx = (char) (sequences.indexOf(c) & 0x000000ff);
+            BinaryStdOut.write(idx);
             if (idx != 0) {
                 sequences.remove(c);
                 sequences.addFirst(c);
             }
-            BinaryStdOut.write(idx);
+
         }
         BinaryStdOut.close();
     }

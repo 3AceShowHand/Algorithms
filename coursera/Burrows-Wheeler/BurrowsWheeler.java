@@ -1,6 +1,5 @@
 import edu.princeton.cs.algs4.BinaryStdIn;
 import edu.princeton.cs.algs4.BinaryStdOut;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BurrowsWheeler {
@@ -29,35 +28,40 @@ public class BurrowsWheeler {
     }
 
     // apply Burrows-Wheeler inverse transform, reading from standard input and writing to standard output
-    // the inputs to inverseTransform is output of transform.
     public static void inverseTransform() {
         int first = BinaryStdIn.readInt();
-        String input = BinaryStdIn.readString();
+        char[] t = BinaryStdIn.readString().toCharArray();
 
-        char[] firstColumn = input.toCharArray();
-        Arrays.sort(firstColumn);
-        ArrayList<Character> sortedFirst = new ArrayList<>();
-        for (char c: firstColumn) {
-            sortedFirst.add(c);
+        char[] next = new char[t.length];
+        for (int i = 0; i < next.length; i++) {
+            next[i] = (char) -1;
         }
 
-        int[] next = new int[input.length()];
+        char[] sorted = new char[t.length];
+        for (int i = 0; i < sorted.length; i++) {
+            sorted[i] = t[i];
+        }
+        Arrays.sort(sorted);
 
-        for (int i = 0; i < input.length(); i++) {
-            char c = input.charAt(first);
-            int index = sortedFirst.indexOf(c);
-            next[index] = first;
-            first = index;
+        for (int i = 0; i < sorted.length; i++) {
+            char c = t[first];
+            for (int j = 0; j < sorted.length; j++) {
+                if (sorted[j] == c) {
+                    int idx = j;
+                    if (next[idx] != (char) -1) {
+                        next[idx] = (char) first;
+                        first = idx;
+                    }
+                }
+            }
         }
         for (int i = 0; i < next.length; i++) {
             BinaryStdOut.write(next[i]);
         }
+
         BinaryStdOut.close();
     }
 
-//    private static int getNextIndex(int idx, int length) {
-//        return (idx + 1) % length;
-//    }
     private static int getPrevIndex(int idx, int length) {
         if (idx == 0) {
             return length - 1;
