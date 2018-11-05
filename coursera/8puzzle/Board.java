@@ -58,14 +58,6 @@ public class Board {
 
     // is this board the goal board?
     public boolean isGoal() {
-//        for (int i = 0; i < size; i++) {
-//            for (int j = 0; j < size; j++) {
-//                if (tileAt(i,j) != xyTo1D(i,j) && j != size - 1) {
-//                    return false;
-//                }
-//            }
-//        }
-//        return true;
         return 0 == manhattan();
     }
 
@@ -89,6 +81,7 @@ public class Board {
         return twin;
     }
 
+    @Override
     public boolean equals(Object y) {
         if (y == this) {
             return true;
@@ -137,6 +130,7 @@ public class Board {
         return neighbors;
     }
 
+    @Override
     public String toString() {
         StringBuilder s = new StringBuilder();
         s.append(size).append("\n");
