@@ -48,24 +48,24 @@ public class InsertInOrderSpeedTest {
         Returns time needed to put N strings into a Map61B in increasing order.
         makes use of StringUtils.nextString(String s)
      */
-    public static double insertInOrder(Map61B<String, Integer> map61B, int N) {
+    private static double insertInOrder(Map61B<String, Integer> map61B, int N) {
         Stopwatch sw = new Stopwatch();
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.nextString(s);
-            map61B.put(s, new Integer(i));
+            map61B.put(s, i);
         }
         return sw.elapsedTime();
     }
     
     /** Returns time needed to put N strings into TreeMap in increasing order.
      */
-    public static double insertInOrder(TreeMap<String, Integer> ts, int N) {
+    private static double insertInOrder(TreeMap<String, Integer> ts, int N) {
         Stopwatch sw = new Stopwatch();
         String s = "cat";
         for (int i = 0; i < N; i++) {
             s = StringUtils.nextString(s);
-            ts.put(s, new Integer(i));
+            ts.put(s, i);
         }
         return sw.elapsedTime();
     }
@@ -75,7 +75,7 @@ public class InsertInOrderSpeedTest {
         Prints time of the N insert calls, otherwise
         Prints a nice message about the error
     */
-    public static void timeInOrderMap61B(Map61B<String, Integer> map, int N) {        
+    private static void timeInOrderMap61B(Map61B<String, Integer> map, int N) {
         try {
             double mapTime = insertInOrder(map, N);
             System.out.printf(map.getClass() + ": %.2f sec\n", mapTime);
@@ -91,7 +91,7 @@ public class InsertInOrderSpeedTest {
         Prints time of the N insert calls, otherwise
         Prints a nice message about the error
     */
-    public static void timeInOrderTreeMap(TreeMap<String, Integer> treeMap, int N) {        
+    private static void timeInOrderTreeMap(TreeMap<String, Integer> treeMap, int N) {
         try {
             double javaTime = insertInOrder(treeMap, N);
             System.out.printf("Java's Built-in TreeMap: %.2f sec\n", javaTime);

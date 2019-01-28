@@ -20,7 +20,7 @@ public class BSTMap<Key extends Comparable<Key> , Value> implements Map61B<Key, 
         private Node left, right;
         private int count;
 
-        public Node(Key key, Value val, int count) {
+        Node(Key key, Value val, int count) {
             this.key = key;
             this.val = val;
             this.count = count;
@@ -103,9 +103,11 @@ public class BSTMap<Key extends Comparable<Key> , Value> implements Map61B<Key, 
     }
 
     private void printInOrder(Node n) {
-        printInOrder(n.left);
-        StdOut.println(n.key);
-        printInOrder(n.right);
+        if (n != null) {
+            printInOrder(n.left);
+            StdOut.println(n.key);
+            printInOrder(n.right);
+        }
     }
 
     @Override
