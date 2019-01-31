@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.TreeSet;
 
-
 public class ObjectWritingAndReadingDemo {
 
     public static void main(String[] args) {
