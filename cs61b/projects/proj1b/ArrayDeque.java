@@ -55,12 +55,12 @@ public class ArrayDeque<Item> implements Deque<Item> {
         items = container;
     }
 
-    public void expand() {
+    private void expand() {
         final int EXPAND_FACTOR = 2;
         resize(EXPAND_FACTOR);
     }
 
-    public void shrink() {
+    private void shrink() {
         double loadFactor = (double) size / capacity;
         if (loadFactor < 0.25 && capacity > 8) {
             final double SHRINK_FACTOR = 0.5;

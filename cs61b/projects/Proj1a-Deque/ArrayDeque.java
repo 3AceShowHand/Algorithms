@@ -56,15 +56,15 @@ public class ArrayDeque<Item> implements Deque<Item> {
     }
 
     public void expand() {
-        final int EXPAND_FACTOR = 2;
-        resize(EXPAND_FACTOR);
+        final int expand_factor = 2;
+        resize(expand_factor);
     }
 
     public void shrink() {
         double loadFactor = (double) size / capacity;
         if (loadFactor < 0.25 && capacity > 8) {
-            final double SHRINK_FACTOR = 0.5;
-            resize(SHRINK_FACTOR);
+            final double shrink_factor = 0.5;
+            resize(shrink_factor);
         }
     }
 
@@ -112,7 +112,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
         Item res = items[front];
         items[front] = null;
         size--;
-        if (front == (capacity-1)) {
+        if (front == (capacity - 1)) {
             front = 0;
         } else {
             front += 1;
@@ -155,7 +155,7 @@ public class ArrayDeque<Item> implements Deque<Item> {
 
     @Override
     public Item get(int index) {
-        if (index < capacity){
+        if (index < capacity) {
             int pos = (front + index) % capacity;
             return items[pos];
         }

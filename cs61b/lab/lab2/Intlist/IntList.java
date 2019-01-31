@@ -1,5 +1,3 @@
-//import jdk.internal.org.objectweb.asm.tree.IntInsnNode;
-
 import java.util.Formatter;
 
 /**
@@ -26,28 +24,12 @@ public class IntList {
         rest = rest0;
     }
 
-
     /**
      * A List with null rest, and first = 0.
      */
     public IntList() {
     /* NOTE: public IntList () { }  would also work. */
         this(0, null);
-    }
-
-    public IntList reverse() {
-        if (this == null) {
-            return null;
-        }
-        IntList ret = new IntList(this.first, null);
-        IntList ptr = this.rest;
-
-        while(ptr != null) {
-            ret.rest = new IntList(ret.first, ret.rest);
-            ret.first = ptr.first;
-            ptr = ptr.rest;
-        }
-        return ret;
     }
 
     /**
@@ -90,8 +72,6 @@ public class IntList {
     }
 
     /** DO NOT MODIFY ANYTHING ABOVE THIS LINE! */
-
-
     /**
      * Returns a list consisting of the elements of A followed by the
      * *  elements of B.  May modify items of A. Don't use 'new'.
@@ -192,22 +172,22 @@ public class IntList {
             return 0;
 
         int cnt = 0;
-
-
         while (true) {
             cnt++;
-            if (hare.rest != null)
+            if (hare.rest != null) {
                 hare = hare.rest.rest;
-            else
+            } else {
                 return 0;
+            }
 
             tortoise = tortoise.rest;
 
-            if (tortoise == null || hare == null)
+            if (tortoise == null || hare == null) {
                 return 0;
-
-            if (hare == tortoise)
+            }
+            if (hare == tortoise) {
                 return cnt;
+            }
         }
     }
 

@@ -112,7 +112,7 @@ public class LinkedListDeque<Item> implements Deque<Item> {
         if (index == 0) {
             return (Item) p.value;
         }
-        return getRecursive(index-1, p.next);
+        return (Item) getRecursive(index-1, p.next);
     }
 
     public Item getRecursive(int index) {

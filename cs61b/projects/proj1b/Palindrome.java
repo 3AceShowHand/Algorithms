@@ -1,35 +1,33 @@
 /**
  * Created by Christopher on 2017/3/28.
  */
-public class Palindrome {
 
-    public static Deque<Character> wordToDeque(String word) {
-        ArrayDeque<Character> res = new ArrayDeque<>();
+public class Palindrome {
+    public Deque<Character> wordToDeque(String word) {
+        Deque<Character> res = new ArrayDeque<>();
         for (int i = 0; i < word.length(); i++) {
             res.addLast(word.charAt(i));
         }
         return res;
     }
-
-    public static boolean isPalindrome(String word) {
-        int low = 0, high = word.length() - 1;
-        while (low < high) {
-            if (word.charAt(low) != word.charAt(high))
+    public boolean isPalindrome(String word) {
+        Deque<Character> deq = wordToDeque(word);
+        for (int i = 0; i < word.length() / 2; i++) {
+            if (word.charAt(i) != deq.removeLast()) {
                 return false;
-            low++;
-            high--;
+            }
         }
         return true;
     }
 
-    public static boolean isPalindrome(String word, CharacterComparator cc) {
-        int low = 0, high = word.length() - 1;
-        while (low < high) {
-            if(!cc.equalChars(word.charAt(low), word.charAt(high)))
+    public boolean isPalindrome(String word, CharacterComparator cc) {
+        Deque<Character> deq = wordToDeque(word);
+        for (int i = 0; i < word.length() / 2; i++) {
+            if (!cc.equalChars(word.charAt(i), deq.removeLast())) {
                 return false;
-            low++;
-            high--;
+            }
         }
         return true;
     }
+
 }
