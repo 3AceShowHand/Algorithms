@@ -11,7 +11,7 @@ import java.util.Set;
 public class ArrayMap<K, V> implements Map61B<K, V> {
     private K[] keys;
     private V[] values;
-    int size;
+    private int size;
 
     public ArrayMap() {
         keys = (K[]) new Object[100];
