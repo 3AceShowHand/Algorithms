@@ -128,7 +128,8 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         int left = leftIndex(index);
         int right = rightIndex(index);
         int child = min(left, right);
-        while (min(index, child) != index ) {
+
+        while (min(index, child) != index && child<= size) {
             swap(index, child);
             index = child;
             left = leftIndex(index);
@@ -193,6 +194,20 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     }
 
     /**
+     * return the index of the item, assume the heap will have two node with the same item.
+     * @param item the value in this pq.
+     * @return the index of the item
+     */
+    public int getItemIndex(T item) {
+        for (int i = 1; i <= size; i++) {
+            if (item.equals(getNode(i).item())) {
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    /**
      * Change the node in this heap with the given item to have the given
      * priority. You can assume the heap will not have two nodes with the same
      * item. Check item equality with .equals(), not ==. This is a challenging
@@ -202,7 +217,35 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
     @Override
     public void changePriority(T item, double priority) {
         /* TODO: Your code here! */
-        return;
+        int idx = getItemIndex(item);
+        if (idx != 0) {
+            contents[idx].myPriority = priority;
+            if (min(idx, parentIndex(idx)) != idx) {
+                swim(idx);
+            } else {
+                sink(idx);
+            }
+
+        }
+    }
+
+    private boolean isPriorityQueue(int k) {
+        if (k > size) {
+            return true;
+        }
+        int left = leftIndex(k);
+        int right = rightIndex(k);
+        if (left <= size && min(k, left) != left) {
+            return false;
+        }
+        if (right <= size && min(k, right) != right) {
+            return false;
+        }
+        return isPriorityQueue(left) && isPriorityQueue(right);
+    }
+
+    public boolean isPriorityQueue() {        //TODO: add testcase for this function
+        return isPriorityQueue(1);
     }
 
     /**
@@ -348,6 +391,31 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         assertEquals("x7", pq.contents[7].myItem);
     }
 
+    @Test
+    public void testGetItemIndex() {
+        ArrayHeap<String> pq = new ArrayHeap<>();
+
+        int a = pq.getItemIndex("c");
+        assertEquals(a, 0);
+
+        pq.insert("a", 1);
+        pq.insert("b", 2);
+        pq.insert("c", 3);
+        assertEquals(1, pq.getItemIndex("a"));
+        assertEquals(2, pq.getItemIndex("b"));
+        assertEquals(3, pq.getItemIndex("c"));
+    }
+
+    @Test
+    public void testChangePriority() {
+        ArrayHeap<String> pq = new ArrayHeap<>();
+        for (int i = 1; i <= 7; i += 1) {
+            pq.insert("x" + i, i);
+        }
+        pq.changePriority("x5", 10);
+        pq.changePriority("x1", 0);
+        assertEquals("x1", pq.peek());
+    }
 
     @Test
     public void testInsert() {
