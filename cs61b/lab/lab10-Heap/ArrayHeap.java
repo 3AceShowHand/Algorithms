@@ -220,7 +220,7 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         int idx = getItemIndex(item);
         if (idx != 0) {
             contents[idx].myPriority = priority;
-            if (min(idx, parentIndex(idx)) != idx) {
+            if (min(idx, parentIndex(idx)) == idx) {
                 swim(idx);
             } else {
                 sink(idx);
@@ -235,10 +235,10 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         }
         int left = leftIndex(k);
         int right = rightIndex(k);
-        if (left <= size && min(k, left) != left) {
+        if (left <= size && min(k, left) == left) {
             return false;
         }
-        if (right <= size && min(k, right) != right) {
+        if (right <= size && min(k, right) == right) {
             return false;
         }
         return isPriorityQueue(left) && isPriorityQueue(right);
@@ -412,9 +412,21 @@ public class ArrayHeap<T> implements ExtrinsicPQ<T> {
         for (int i = 1; i <= 7; i += 1) {
             pq.insert("x" + i, i);
         }
-        pq.changePriority("x5", 10);
-        pq.changePriority("x1", 0);
-        assertEquals("x1", pq.peek());
+        pq.changePriority("x2", 10);
+        pq.changePriority("x6", 0);
+        assertTrue(pq.isPriorityQueue());
+    }
+
+    @Test
+    public void testIsPriority() {
+        ArrayHeap<String> pq = new ArrayHeap<>();
+
+        pq.insert("b", 2);
+        assertTrue(pq.isPriorityQueue());
+        pq.insert("c", 3);
+        assertTrue(pq.isPriorityQueue());
+        pq.insert("a", 1);
+        assertTrue(pq.isPriorityQueue());
     }
 
     @Test
