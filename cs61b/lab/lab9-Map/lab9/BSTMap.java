@@ -55,9 +55,13 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
             return null;
         }
         int cmp = key.compareTo(p.key);
-        if (cmp == 0) return p.value;
-        else if (cmp < 0) return getHelper(key, p.left);
-        else return getHelper(key, p.right);
+        if (cmp == 0) {
+            return p.value;
+        } else if (cmp < 0) {
+            return getHelper(key, p.left);
+        } else {
+            return getHelper(key, p.right);
+        }
     }
 
     /** Returns the value to which the specified key is mapped, or null if this
@@ -144,8 +148,7 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         return ret;
     }
 
-    /* delete min node root at p
-    * */
+    /* delete min node root at p */
     private Node deleteMin(Node p) {
         if (p.left == null) {
             size -= 1;
@@ -280,11 +283,33 @@ public class BSTMap<K extends Comparable<K>, V> implements Map61B<K, V> {
         }
     }
 
+    public LinkedList<K> preorderTraverseIterative() {
+        Stack<Node> trace = new Stack<>();
+        trace.push(this.root);
+
+        LinkedList<K> ret = new LinkedList<>();
+        while (!trace.isEmpty()) {
+            Node t = trace.pop();
+            if (t == null) {
+                continue;
+            }
+            ret.push(t.key);
+            trace.push(t.left);
+            trace.push(t.right);
+        }
+        return ret;
+    }
+
     public static void main(String[] args) {
         BSTMap<Integer, Integer> map = new BSTMap<>();
         for (int i = 0; i < 10; i++) {
             map.put(i, i);
         }
+
+        LinkedList<Integer> preorder = map.preorderTraverseIterative();
+        System.out.println("Key in preorder:\n");
+        System.out.println(preorder);
+
         Iterator iter = map.iterator();
         while (iter.hasNext()) {
             System.out.println(iter.next());
