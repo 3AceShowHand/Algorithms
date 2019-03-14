@@ -1,5 +1,7 @@
 package graphs;
 
+import java.util.Stack;
+
 /**
  *  @author Josh Hug
  */
@@ -49,9 +51,35 @@ public class MazeDepthFirstPaths extends MazeExplorer {
         }
     }
 
+    private void dfsIterative(int v) {
+        Stack<Integer> trace = new Stack<>();
+        trace.push(v);
+
+        while (!trace.isEmpty()) {
+            int current = trace.pop();
+            marked[current] = true;
+            announce();
+            if (current == t) {
+                targetFound = true;
+            }
+            if (targetFound) {
+                return;
+            }
+            for (int w: maze.adj(current)) {
+                if (!marked[w]) {
+                    edgeTo[w] = current;
+                    distTo[w] = distTo[current] + 1;
+                    trace.push(w);
+                }
+            }
+
+        }
+    }
+
     @Override
     public void solve() {
-        dfs(s);
+        // dfs(s);
+        dfsIterative(s);
     }
 }
 
