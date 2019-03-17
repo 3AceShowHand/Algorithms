@@ -22,7 +22,7 @@ public class TestArrayMap {
         }
     }
 
-    //assumes put/size/containsKey/get work
+    // assumes put/size/containsKey/get work
     @Test
     public void sanityClearTest() {
         ArrayMap<String, Integer> b = new ArrayMap<>();
